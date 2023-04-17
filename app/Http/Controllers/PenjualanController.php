@@ -11,4 +11,9 @@ class PenjualanController extends Controller
     {
         return view('penjualan.index');
     }
+
+    public function handphone(): View
+    {
+        return view('penjualan.handphone.index');
+    }
 }

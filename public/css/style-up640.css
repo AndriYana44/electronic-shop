@@ -1,0 +1,9 @@
+@media only screen and (max-width: 640px) {
+    
+    .submenu {
+        font-size: 14px;
+        display: flex;
+        justify-content: space-evenly;
+    }
+    
+}

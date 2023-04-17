@@ -1,0 +1,16 @@
+* {
+    color: #333;
+    box-sizing: border-box;
+}
+.submenu {
+    font-size: 14px;
+    display: flex;
+    justify-content: space-evenly;
+}
+.submenu a {
+    padding: 10px 30px;
+    border-bottom: 2px solid #fff;
+}
+.submenu a:hover {
+    border-bottom: 2px solid #777;
+}

@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
     // penjualan
     Route::prefix('/penjualan')->group(function() {
         Route::get('/', [PenjualanController::class, 'index'])->name('penjualan');
+        Route::get('/handphone', [PenjualanController::class, 'handphone'])->name('handphone');
     });
     // keuangan
     Route::prefix('/keuangan')->group(function() {
