@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,9 +26,11 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // penjualan
     Route::prefix('/penjualan')->group(function() {
-        Route::get('/', function() {
-            echo "penjualan";
-        })->name('penjualan');
+        Route::get('/', [PenjualanController::class, 'index'])->name('penjualan');
+    });
+    // keuangan
+    Route::prefix('/keuangan')->group(function() {
+        Route::get('/', [KeuanganController::class, 'index'])->name('keuangan');
     });
 });
 

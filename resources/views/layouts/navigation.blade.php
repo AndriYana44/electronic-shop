@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('penjualan')" :active="request()->routeIs('penjualan')">
                         {{ __('Penjualan') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('keuangan')" :active="request()->routeIs('keuangan')">
+                        {{ __('Keuangan') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -75,6 +78,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('penjualan')" :active="request()->routeIs('penjualan')">
                 {{ __('Penjualan') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('keuangan')" :active="request()->routeIs('keuangan')">
+                {{ __('Keuangan') }}
             </x-responsive-nav-link>
         </div>
 
