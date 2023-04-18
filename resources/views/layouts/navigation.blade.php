@@ -12,13 +12,13 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard')" id="menus" class="{{ str_contains(url()->current(), 'dashboard') ? 'active' : '' }}">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('penjualan')" :active="request()->routeIs('penjualan')">
-                        {{ __('Penjualan') }}
+                    <x-nav-link :href="route('handphone')" id="menus" class="{{ str_contains(url()->current(), 'produk') ? 'active' : '' }}">
+                        {{ __('Produk') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('keuangan')" :active="request()->routeIs('keuangan')">
+                    <x-nav-link :href="route('keuangan')" id="menus" class="{{ str_contains(url()->current(), 'keuangan') ? 'active' : '' }}">
                         {{ __('Keuangan') }}
                     </x-nav-link>
                 </div>
@@ -72,16 +72,16 @@
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+        <div class="pt-2 pb-3 space-y-1 d-block">
+            <x-nav-link :href="route('dashboard')" id="menus" class="{{ str_contains(url()->current(), 'dashboard') ? 'active' : '' }}">
                 {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('penjualan')" :active="request()->routeIs('penjualan')">
-                {{ __('Penjualan') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('keuangan')" :active="request()->routeIs('keuangan')">
+            </x-nav-link>
+            <x-nav-link :href="route('handphone')" id="menus" class="{{ str_contains(url()->current(), 'produk') ? 'active' : '' }}">
+                {{ __('Produk') }}
+            </x-nav-link>
+            <x-nav-link :href="route('keuangan')" id="menus" class="{{ str_contains(url()->current(), 'keuangan') ? 'active' : '' }}">
                 {{ __('Keuangan') }}
-            </x-responsive-nav-link>
+            </x-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

@@ -13,6 +13,9 @@
 
         <link href="{{ asset('css/style-up640.css') }}" rel="stylesheet" />
         <link href="{{ asset('css/style-all.css') }}" rel="stylesheet" />
+        <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+        <link href="{{ asset('fontawesome/css/all.min.css') }}" rel="stylesheet" />
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -34,5 +37,7 @@
                 {{ $slot }}
             </main>
         </div>
+        <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('fontawesome/js/all.min.js') }}"></script>
     </body>
 </html>

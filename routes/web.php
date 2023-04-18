@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KeuanganController;
-use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\produk\ProdukHandphoneController;
+use App\Http\Controllers\produk\ProdukViewsController;
+use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,10 +26,16 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function() {
     // dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    // penjualan
-    Route::prefix('/penjualan')->group(function() {
-        Route::get('/', [PenjualanController::class, 'index'])->name('penjualan');
-        Route::get('/handphone', [PenjualanController::class, 'handphone'])->name('handphone');
+    // produk
+    Route::prefix('/produk')->group(function() {
+        Route::get('/', [ProdukViewsController::class, 'index'])->name('produk');
+        Route::prefix(('/handphone'))->group(function() {
+            Route::get('/', [ProdukHandphoneController::class, 'index'])->name('handphone');
+            Route::post('/store', [ProdukHandphoneController::class, 'store'])->name('store');
+        });
+        Route::get('/pulsa', [ProdukViewsController::class, 'pulsa'])->name('pulsa');
+        Route::get('/aksesoris', [ProdukViewsController::class, 'aksesoris'])->name('aksesoris');
+        Route::get('/servis', [ProdukViewsController::class, 'servis'])->name('servis');
     });
     // keuangan
     Route::prefix('/keuangan')->group(function() {
