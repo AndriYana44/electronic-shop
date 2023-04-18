@@ -25,3 +25,7 @@
 .submenu a:hover {
     border-bottom: 2px solid #777;
 }
+.image-items {
+    width: 80%;
+    text-align: center;
+}

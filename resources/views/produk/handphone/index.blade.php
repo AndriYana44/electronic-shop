@@ -21,21 +21,22 @@
     </div>
     <div class="product-list">
         <div class="row">
-
+            @foreach($item_list as $item)
             <div class="col-6 col-sm-4 col-md-3">
                 <div class="card shadow-md">
                     <div class="card-header">
-                        Vivo Y320i
+                        {{ $item->name }}
                     </div>
                     <div class="card-body">
-                        Foto
+                        <img class="image-items" src="{{ asset('') }}picture/handphone/{{ $item->picture }}">
                     </div>
                     <div class="card-footer">
-                        Spesifikasi & harga
+                        {{ $item->spesification }} <hr>
+                        Rp.{{ $item->price }}
                     </div>
                 </div>
             </div>
-            
+            @endforeach
         </div>
     </div>
 
@@ -43,7 +44,7 @@
     <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form method="post" action="{{ route('store') }}">
+                <form method="post" action="{{ route('store') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Tambah Produk</h5>
@@ -63,12 +64,12 @@
                             <label for="spesifikasi">Spesifikasi</label>
                         </div>
                         <div class="mb-3">
-                            <label for="harga" class="form-label">Stok</label>
-                            <input type="number" name="stok" class="form-control-sm" autocomplete="off" placeholder="123" id="stok">
+                            <label for="harga" class="form-label">Stok Handphone</label>
+                            <input type="number" name="stok" class="form-control" autocomplete="off" placeholder="123" id="stok">
                         </div>
                         <div class="mb-3">
                             <label for="formFileSm" class="form-label">Foto Handphone</label>
-                            <input class="form-control form-control-sm" name="picture" id="formFileSm" type="file">
+                            <input class="form-control form-control" name="picture" id="formFileSm" type="file">
                         </div>
                     </div>
                     <div class="modal-footer">
