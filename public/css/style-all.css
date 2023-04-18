@@ -26,6 +26,10 @@
     border-bottom: 2px solid #777;
 }
 .image-items {
-    width: 80%;
+    width: 60%;
     text-align: center;
+}
+.action {
+    display: flex;
+    justify-content: space-between;
 }

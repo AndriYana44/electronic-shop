@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function() {
         Route::get('/', [ProdukViewsController::class, 'index'])->name('produk');
         Route::prefix(('/handphone'))->group(function() {
             Route::get('/', [ProdukHandphoneController::class, 'index'])->name('handphone');
+            Route::post('/', [ProdukHandphoneController::class, 'index'])->name('handphone');
             Route::post('/store', [ProdukHandphoneController::class, 'store'])->name('store');
         });
         Route::get('/pulsa', [ProdukViewsController::class, 'pulsa'])->name('pulsa');

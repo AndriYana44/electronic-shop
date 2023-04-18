@@ -15,6 +15,7 @@
         <link href="{{ asset('css/style-all.css') }}" rel="stylesheet" />
         <link href="{{ asset('bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
         <link href="{{ asset('fontawesome/css/all.min.css') }}" rel="stylesheet" />
+        <link href="{{ asset('select2/dist/css/select2.min.css') }}" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -37,7 +38,10 @@
                 {{ $slot }}
             </main>
         </div>
+        <script src="{{ asset('js/jquery.js') }}"></script>
         <script src="{{ asset('bootstrap/js/bootstrap.bundle.min.js') }}"></script>
         <script src="{{ asset('fontawesome/js/all.min.js') }}"></script>
+        <script src="{{ asset('select2/dist/js/select2.min.js') }}"></script>
+        @yield('script')
     </body>
 </html>

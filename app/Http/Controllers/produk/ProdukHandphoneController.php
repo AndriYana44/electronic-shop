@@ -9,11 +9,20 @@ use Illuminate\View\View;
 
 class ProdukHandphoneController extends Controller
 {
-    public function index(): View
+    public function index(request $request): View
     {
         $item_list = DB::table('item_handphone')->get()->all();
+        $filtered = null;
+        if($request->itemFiltered != null) {
+            $filtered = $request->itemFiltered;
+            $item_filtered = DB::table('item_handphone')
+                ->where('name', $filtered)
+                ->get();
+        }
         return view('produk.handphone.index', [
-            'item_list' => $item_list
+            'item_list' => $item_list,
+            'item_display' => $filtered == null || $filtered == 'All items' ? $item_list : $item_filtered,
+            'item_filtered' => $filtered
         ]);
     }
 
