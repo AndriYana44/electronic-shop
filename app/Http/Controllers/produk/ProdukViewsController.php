@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\produk;
 
 use App\Http\Controllers\Controller;
+use App\Models\produk\Cart;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -13,9 +14,16 @@ class ProdukViewsController extends Controller
         return view('produk.index');
     }
 
-    public function pulsa(): View
+    public function cart(Request $request)
     {
-        return view('produk.pulsa.index');
+        $cart = new Cart();
+        $cart->name = $request->name;
+        $cart->price = $request->total;
+        $cart->kategori_items = $request->kategori;
+        $cart->jumlah = $request->jml;
+        $cart->save();
+
+        return back()->with('success', 'Di tambahkan ke cart!');
     }
 
     public function aksesoris(): View

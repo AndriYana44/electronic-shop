@@ -1,22 +1,37 @@
 @extends('produk.index')
 @section('main-content')
     <div class="item-menus row my-3">
-        <div class="col-12 col-sm-8 col-md-6">
-            <button class="add-item btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addItem">
-                <i class="fa fa-plus"></i>
-                Tambah Item
-            </button>
-            <div class="d-inline ml-4">
-                <form class="formFilter d-inline" method="post" action="{{ route('handphone') }}">
-                    @csrf
-                    <select class="filter-items d-inline" name="itemFiltered">
-                        <option></option>
-                        <option value="All items">All items</option>
-                        @foreach($item_list as $item)
-                            <option value="{{ $item->name }}">{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </form>
+        <div class="col-12 d-flex justify-between">
+            <div class="">
+                <button class="add-item btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#addItem">
+                    <i class="fa fa-plus"></i>
+                    Tambah Item
+                </button>
+                <div class="d-inline ml-4">
+                    <form class="formFilter d-inline" method="post" action="{{ route('handphone') }}">
+                        @csrf
+                        <label>
+                            Filter Item <br>
+                            <select class="filter-items" name="itemFiltered">
+                                <option></option>
+                                <option value="All items">All items</option>
+                                @foreach($item_list as $item)
+                                    <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+                    </form>
+                </div>
+            </div>
+            <div class="cart-place">
+                <div class="cart">
+                    <img src="{{ asset('img/cart-icon.png') }}" alt="icon-cart">
+                </div>
+                @if(count($cart) > 0)
+                <span class="cart-notif">
+                    <b>{{ count($cart) }}</b>
+                </span>
+                @endif
             </div>
         </div>
     </div>
@@ -24,29 +39,34 @@
         <div class="row">
             @foreach($item_display as $item)
             <div class="col-6 col-sm-4 col-md-3">
-                <div class="card shadow-md">
+                <div class="card shadow-md" style="height: 23rem;">
                     <div class="card-header">
-                        {{ $item->name }}
+                        <b>{{ $item->name }}</b>
                     </div>
                     <div class="card-body">
-                        <img class="image-items d-inline" src="{{ asset('') }}picture/handphone/{{ $item->picture }}">
+                        <div class="img-place">
+                            <img class="image-items d-inline" src="{{ asset('') }}picture/handphone/{{ $item->picture }}">
+                        </div>
                     </div>
                     <div class="card-footer">
                         <span>{{ $item->spesification }}</span><hr class="my-2">
-                        <span>
+                        <span class="d-flex justify-between">
                             <strong>Rp.{{ number_format($item->price,2,',','.') }}</strong>
+                            <small>Stok: {{ $item->available_items }}</small>
                         </span>
                         <hr class="my-2">
                         <div class="action">
-                            <div class="sub-action">
-                                <a class="mr-3 text-danger" href="#">
-                                    Hapus
-                                </a>
-                                <a class="ml-3 text-success" href="#">
+                            <div class="sub-action d-flex">
+                                <form action="{{ route('delete-handphone', $item->id) }}" method="POST">
+                                    @csrf
+                                    @method('delete')
+                                    <button type="submit" data-item="{{ $item->name }}" class="btn btn-sm btn-outline-danger show_confirm mr-2" data-toggle="tooltip" title='Delete'>Delete</button>
+                                </form>
+                                <a class="btn btn-outline-success btn-sm" href="#" data-bs-toggle="modal" data-bs-target="#editItem{{ $item->id }}">
                                     Edit
                                 </a>
                             </div>
-                            <span>Stok: {{ $item->available_items }}</span>
+                            <a href="#" class="d-block btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#sellItem{{ $item->id }}">Jual</a>
                         </div>
                     </div>
                 </div>
@@ -59,7 +79,7 @@
     <div class="modal fade" id="addItem" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form method="post" action="{{ route('store') }}" enctype="multipart/form-data">
+                <form method="post" action="{{ route('store-handphone') }}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Tambah Produk</h5>
@@ -95,11 +115,114 @@
             </div>
         </div>
     </div>
+
+    @foreach($item_display as $item)
+    <div class="modal fade" id="sellItem{{ $item->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" action="" id="sell{{ $item->id }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Jual Item ({{ $item->name }})</h5>
+                        <input type="text" name="name" value="{{ $item->name }}" hidden>
+                        <input type="text" name="kategori" value="handphone" hidden>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-7">
+                                <img class="img-handphone-sell" src="{{ asset('') }}picture/handphone/{{ $item->picture }}" alt="images" style="height: 15rem;">
+                            </div>
+                            <div class="col-4">
+                                Spek: <br> {{ $item->spesification }}
+                                <hr class="my-2">
+                                <strong>Harga: <br> Rp.{{ number_format($item->price) }}</strong>
+                                <hr class="my-2">
+                                <small>Stok: {{ $item->available_items }}</small>
+                            </div>
+                            <div class="col-2 mt-2">
+                                <small>
+                                    <label for="jml">
+                                        Jumlah: 
+                                        <input type="number" name="jml" data-id="{{ $item->id }}" class="form-control" value="1" placeholder="0" id="jml">
+                                    </label>
+                                </small>
+                            </div>
+                            <div class="col-4 mt-2">
+                                <small>
+                                    <label for="jml">
+                                        Total Harga: 
+                                        <input type="text" data-price="{{ $item->price }}" value="Rp.{{ number_format($item->price) }}" class="form-control" id="displaytotal{{ $item->id }}" disabled>
+                                        <input type="text" value="{{ $item->price }}" name="total" class="form-control" id="inputtotal{{ $item->id }}" hidden>
+                                    </label>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" data-id="{{ $item->id }}" id="btn-bayar" class="btn btn-outline-primary btn-sm">
+                            Bayar
+                        </button>
+                        <button type="submit" data-id="{{ $item->id }}" id="btn-cart" class="btn btn-outline-secondary btn-sm">
+                            Masukan Cart
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
+    @foreach($item_display as $item)
+    <div class="modal fade" id="editItem{{ $item->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" action="{{ route('update-handphone', $item->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    @method('patch')
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Edit Item ({{ $item->name }})</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nama" class="form-label">Nama Item</label>
+                            <input type="text" name="nama" value="{{ $item->name }}" class="form-control" id="nama" autocomplete="off">
+                        </div>
+                        <div class="mb-3">
+                            <label for="harga" class="form-label">Harga</label>
+                            <input type="text" name="harga" value="{{ number_format($item->price) }}" class="form-control" id="harga" placeholder="Rp." autocomplete="off">
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" name="spesifikasi" placeholder="Leave a comment here" id="spesifikasi" style="height: 100px">{{ $item->spesification }}</textarea>
+                            <label for="spesifikasi">Spesifikasi</label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="harga" class="form-label">Stok Handphone</label>
+                            <input type="number" name="stok" value="{{ $item->available_items }}" class="form-control" autocomplete="off" placeholder="123" id="stok">
+                        </div>
+                        <div class="mb-3">
+                            <label for="formFileSm" class="form-label">Foto Handphone</label>
+                            <input class="form-control form-control" value="{{ $item->picture }}" name="picture" id="formFileSm" type="file">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-outline-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
     <!-- end modal -->
 @stop
 @section('script')
     <script>
+
         $(document).ready(function() {
+            $('.cart-notif').fadeIn('3000');
+
             $('.filter-items').select2({
                 placeholder: "{{ $item_filtered == null ? 'Filter item..' : $item_filtered}}",
                 allowClear: true
@@ -110,6 +233,66 @@
             });
 
             $('.filter-items').val('{{ $item_filtered }}')
+
+            $(document).on('change', '#jml', function(e) {
+                let jml = $(this).val();
+                let id = $(this).data('id');
+                let price = $(`#displaytotal${id}`).data('price');
+                if(jml < 1) {
+                    $(this).val(1);
+                    jml = 1;
+                }
+                
+                fix_price = price*jml
+                $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
+                $(`#inputtotal${id}`).val(fix_price);
+            });
+
+            $(document).on('keyup', 'input[name=harga]', function() {
+                let currentVal = $(this).val();
+                $(this).val(number_format(currentVal));
+            });
+
+            $('.show_confirm').click(function(event) {
+                let form = $(this).closest("form");
+                let name = $(this).data("name");
+                let item = $(this).data("item");
+                event.preventDefault();
+                swal({
+                    title: `Lanjutkan Menghapus?`,
+                    text: `${item} akan di hapus dari daftar!`,
+                    icon: "warning",
+                    buttons: ['No!', true],
+                    dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if(willDelete) {
+                        form.submit();
+                    }
+                });
+            });
+
+            @if($message = Session::get('success'))
+                swal("{{ $message }}", {
+                    icon: "success",
+                });
+            @endif
+
+            $(document).on('click', 'button', (e) => {
+                _target = e.target.id;
+                id = $(e.target).data('id');
+                if(_target.indexOf('btn-bayar') > -1) {
+                    e.preventDefault();
+                    let url = '{{ route("checkout-handphone", ":id") }}';
+                    url = url.replace(':id', id);
+                    $(`#sell${id}`).attr('action', url).submit();
+                } else if (_target.indexOf('btn-cart') > -1) {
+                    e.preventDefault();
+                    let url = '{{ route("cart", ":id") }}';
+                    url = url.replace(':id', id);
+                    $(`#sell${id}`).attr('action', '{{ route("cart") }}').submit();
+                }
+            });
         });
     </script>
 @stop

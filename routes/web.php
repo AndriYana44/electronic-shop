@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\produk\ProdukHandphoneController;
+use App\Http\Controllers\produk\ProdukPulsaController;
 use App\Http\Controllers\produk\ProdukViewsController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
@@ -19,22 +20,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::middleware(['auth', 'verified'])->group(function() {
     // dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     // produk
     Route::prefix('/produk')->group(function() {
         Route::get('/', [ProdukViewsController::class, 'index'])->name('produk');
+        Route::post('/cart', [ProdukViewsController::class, 'cart'])->name('cart');
         Route::prefix(('/handphone'))->group(function() {
             Route::get('/', [ProdukHandphoneController::class, 'index'])->name('handphone');
             Route::post('/', [ProdukHandphoneController::class, 'index'])->name('handphone');
-            Route::post('/store', [ProdukHandphoneController::class, 'store'])->name('store');
+            Route::post('/store', [ProdukHandphoneController::class, 'store'])->name('store-handphone');
+            Route::post('/checkout/{id}', [ProdukHandphoneController::class, 'checkout'])->name('checkout-handphone');
+            Route::patch('/update/{id}', [ProdukHandphoneController::class, 'update'])->name('update-handphone');
+            Route::delete('/delete/{id}', [ProdukHandphoneController::class, 'delete'])->name('delete-handphone');
         });
-        Route::get('/pulsa', [ProdukViewsController::class, 'pulsa'])->name('pulsa');
+        Route::prefix('pulsa')->group(function() {
+            Route::get('/', [ProdukPulsaController::class, 'index'])->name('pulsa');
+            Route::post('/', [ProdukPulsaController::class, 'index'])->name('pulsa');
+            Route::post('/store', [ProdukPulsaController::class, 'store'])->name('store-pulsa');
+            Route::post('/store_saldo', [ProdukPulsaController::class, 'store_saldo'])->name('store_saldo');
+            Route::post('/checkout', [ProdukPulsaController::class, 'checkout'])->name('checkout-pulsa');
+        });
         Route::get('/aksesoris', [ProdukViewsController::class, 'aksesoris'])->name('aksesoris');
         Route::get('/servis', [ProdukViewsController::class, 'servis'])->name('servis');
     });

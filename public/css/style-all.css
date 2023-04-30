@@ -3,7 +3,7 @@
     box-sizing: border-box;
 }
 #menus {
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid rgba(0, 0, 0, 0);
 }
 #menus.active {
     border-bottom: 2px solid #4169e1;
@@ -26,10 +26,94 @@
     border-bottom: 2px solid #777;
 }
 .image-items {
-    width: 60%;
+    width: 50%;
     text-align: center;
+}
+.img-operator {
+    width: 60%;
+    height: 80%;
 }
 .action {
     display: flex;
     justify-content: space-between;
+}
+.product-list .card-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.product-list .card {
+    position: relative;
+}
+.product-list .card-footer {
+    position: absolute;
+    overflow: hidden;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.product-list .card a img{
+    transition: .5s;
+    position: absolute;
+}
+.product-list .card a:hover img{
+    width: 55%;
+}
+.img-handphone-sell {
+    height: 25rem;
+    width: 20x;
+}
+#jml, #total {
+    border: none;
+    border-bottom: 1px solid #555;
+    outline: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+.cart-place {
+    width: 50px;
+    height: 50px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0px 5px 6px 1px rgba(0, 0, 0, 0.5);
+    margin-right: 2rem;
+    cursor: pointer;
+    position: relative;
+}
+.cart {
+    width: 35px;
+    height: 35px;
+    transition: .3s;
+}
+.cart-notif {
+    position: absolute;
+    right: -5px;
+    bottom: -5px;
+    background-color: #ee5522;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition-delay: .3s;
+    transition-duration: .5s;
+}
+.cart-notif b {
+    color: #FFF;
+    font-weight: 600;
+    font-size: 12px;
+}
+.cart-place:hover .cart{
+    width: 40px;
+    height: 40px;
+}
+.cart-place:hover .cart-notif {
+    width: 24px;
+    height: 24px;
+    bottom: -9px;
+    right: -9px;
 }

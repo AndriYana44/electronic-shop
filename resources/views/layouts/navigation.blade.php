@@ -16,7 +16,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('handphone')" id="menus" class="{{ str_contains(url()->current(), 'produk') ? 'active' : '' }}">
-                        {{ __('Produk') }}
+                        {{ __('Jual Produk') }}
                     </x-nav-link>
                     <x-nav-link :href="route('keuangan')" id="menus" class="{{ str_contains(url()->current(), 'keuangan') ? 'active' : '' }}">
                         {{ __('Keuangan') }}
