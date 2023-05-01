@@ -51,7 +51,7 @@
                     <div class="card-footer">
                         <span>{{ $item->spesification }}</span><hr class="my-2">
                         <span class="d-flex justify-between">
-                            <strong>Rp.{{ number_format($item->price,2,',','.') }}</strong>
+                            <strong>{{ number_format($item->varian->first()->price) }} - {{ number_format($item->varian->last()->price) }}</strong>
                             <small>Stok: {{ $item->available_items }}</small>
                         </span>
                         <hr class="my-2">
@@ -90,10 +90,6 @@
                             <label for="nama" class="form-label">Nama Item</label>
                             <input type="text" name="nama" class="form-control" id="nama" autocomplete="off">
                         </div>
-                        <div class="mb-3">
-                            <label for="harga" class="form-label">Harga</label>
-                            <input type="text" name="harga" class="form-control" id="harga" placeholder="Rp." autocomplete="off">
-                        </div>
                         <div class="form-floating mb-3">
                             <textarea class="form-control" name="spesifikasi" placeholder="Leave a comment here" id="spesifikasi" style="height: 100px"></textarea>
                             <label for="spesifikasi">Spesifikasi</label>
@@ -104,7 +100,20 @@
                         </div>
                         <div class="mb-3">
                             <label for="formFileSm" class="form-label">Foto Handphone</label>
-                            <input class="form-control form-control" name="picture" id="formFileSm" type="file">
+                            <input class="form-control" name="picture" id="formFileSm" type="file">
+                        </div>
+                        <hr class="mb-3">
+                        <div class="mb-3">
+                            <div class="d-flex">
+                                <input type="text" name="varian[]" class="form-control" placeholder="Varian.." autocomplete="off">
+                            </div> 
+                            <input type="text" name="harga[]" id="item_price" class="form-control mt-2" placeholder="Harga.." autocomplete="off">
+                        </div>
+                        <div class="varian">
+                            
+                        </div>
+                        <div class="mb-3">
+                            <a href="#" class="btn btn-secondary btn-sm btn-varian">+ Tambah Varian</a>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -136,9 +145,15 @@
                             <div class="col-4">
                                 Spek: <br> {{ $item->spesification }}
                                 <hr class="my-2">
-                                <strong>Harga: <br> Rp.{{ number_format($item->price) }}</strong>
-                                <hr class="my-2">
-                                <small>Stok: {{ $item->available_items }}</small>
+                                <small>Tersedia: {{ $item->available_items }}</small>
+                            </div>
+                            <div class="col-12 mt-3">
+                                <span>pilih varian</span>
+                            </div>
+                            <div class="col-12">
+                                @foreach($item->varian as $varian)
+                                    <span style="cursor: pointer" class="badge bg-secondary varian mr-2">{{ $varian->varian }}</span>
+                                @endforeach
                             </div>
                             <div class="col-2 mt-2">
                                 <small>
@@ -152,7 +167,7 @@
                                 <small>
                                     <label for="jml">
                                         Total Harga: 
-                                        <input type="text" data-price="{{ $item->price }}" value="Rp.{{ number_format($item->price) }}" class="form-control" id="displaytotal{{ $item->id }}" disabled>
+                                        <input type="text" style="font-size: 12px" data-price="{{ $item->price }}" value="Rp.{{ number_format($item->price) }}" class="form-control" id="displaytotal{{ $item->id }}" disabled>
                                         <input type="text" value="{{ $item->price }}" name="total" class="form-control" id="inputtotal{{ $item->id }}" hidden>
                                     </label>
                                 </small>
@@ -162,7 +177,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
                         <button type="submit" data-id="{{ $item->id }}" id="btn-bayar" class="btn btn-outline-primary btn-sm">
-                            Bayar
+                            Checkout
                         </button>
                         <button type="submit" data-id="{{ $item->id }}" id="btn-cart" class="btn btn-outline-secondary btn-sm">
                             Masukan Cart
@@ -204,6 +219,9 @@
                         <div class="mb-3">
                             <label for="formFileSm" class="form-label">Foto Handphone</label>
                             <input class="form-control form-control" value="{{ $item->picture }}" name="picture" id="formFileSm" type="file">
+                        </div>
+                        <div class="mb-3">
+                            <a href="#" >Tambah pilihan item</a>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -248,7 +266,7 @@
                 $(`#inputtotal${id}`).val(fix_price);
             });
 
-            $(document).on('keyup', 'input[name=harga]', function() {
+            $(document).on('keyup', '#item_price', function() {
                 let currentVal = $(this).val();
                 $(this).val(number_format(currentVal));
             });
@@ -293,6 +311,24 @@
                     $(`#sell${id}`).attr('action', '{{ route("cart") }}').submit();
                 }
             });
+
+            $(document).on('click', '.btn-varian', function (e) { 
+                let el = `
+                    <div class="parent-varian"><hr>
+                        <span style="cursor: pointer" class="badge bg-danger delete-varian mt-2">Hapus</span>
+                        <input type="text" name="varian[]" class="form-control mt-2" placeholder="Varian.." autocomplete="off">
+                        <input type="text" name="harga[]" id="item_price" class="form-control my-2" placeholder="Harga.." autocomplete="off">
+                    </div>`; 
+                $(document).find('.varian').append(el);
+            });
+
+            $(document).on('click', '.delete-varian', function(e) {
+                $(e.target).parent('.parent-varian').fadeOut(300, function() {
+                    $(e.target).parent('.parent-varian').remove();
+                });
+            });
+
+            
         });
     </script>
 @stop

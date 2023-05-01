@@ -4,6 +4,7 @@ namespace App\Http\Controllers\produk;
 
 use App\Http\Controllers\Controller;
 use App\Models\produk\Cart;
+use App\Models\produk\handphone\HandphoneVarian;
 use App\Models\produk\ProdukHandphone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,8 +15,7 @@ class ProdukHandphoneController extends Controller
 {
     public function index(request $request): View
     {
-        $item_list = DB::table('item_handphone')->get()->all();
-
+        $item_detail = ProdukHandphone::with('varian')->get();
         $cart = Cart::all();
         $filtered = null;
         if($request->itemFiltered != null) {
@@ -25,9 +25,10 @@ class ProdukHandphoneController extends Controller
                 ->get();
         }
         return view('produk.handphone.index', [
-            'item_list' => $item_list,
-            'item_display' => $filtered == null || $filtered == 'All items' ? $item_list : $item_filtered,
+            'item_list' => $item_detail,
+            'item_display' => $filtered == null || $filtered == 'All items' ? $item_detail : $item_filtered,
             'item_filtered' => $filtered,
+            'item_detail' => $item_detail,
             'cart' => $cart
         ]);
     }
@@ -40,16 +41,23 @@ class ProdukHandphoneController extends Controller
         $imageName = time().'.'.$request->picture->extension();
         $request->picture->move(public_path('picture/handphone'), $imageName);
 
-        $harga = explode(',', $request->harga);
-        $harga = implode('', $harga);
+        $dataItem = new ProdukHandphone();
+        $dataItem->name = $request->nama;
+        $dataItem->spesification = $request->spesifikasi;
+        $dataItem->picture = $imageName;
+        $dataItem->available_items = $request->stok;
+        $dataItem->save();
 
-        DB::table('item_handphone')->insert([
-            'name' => $request->nama,
-            'price' => $harga,
-            'spesification' => $request->spesifikasi,
-            'picture' => $imageName,
-            'available_items' => $request->stok
-        ]);
+        foreach($request->varian as $key => $varian) {
+            $harga = explode(',', $request->harga[$key]);
+            $harga = implode('', $harga);
+
+            DB::table('item_handphone_varian')->insert([
+                'handphone_id' => $dataItem->id,
+                'varian' => $varian,
+                'price' => $harga
+            ]);
+        }
 
         return redirect('/produk/handphone');
     }

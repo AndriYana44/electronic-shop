@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('item_handphone_sold', function (Blueprint $table) {
+        Schema::create('item_handphone_varian', function (Blueprint $table) {
             $table->id();
             $table->integer('handphone_id');
-            $table->integer('handphone_varian_id');
-            $table->string('sold_at_price');
-            $table->integer('jumlah');
+            $table->string('varian');
+            $table->string('price');
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('item_handphone_sold');
+        Schema::dropIfExists('item_handphone_varian');
     }
 };
