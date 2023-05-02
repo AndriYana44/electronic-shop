@@ -51,7 +51,11 @@
                     <div class="card-footer">
                         <span>{{ $item->spesification }}</span><hr class="my-2">
                         <span class="d-flex justify-between">
+                            @if(count($item->varian) > 1)
                             <strong>{{ number_format($item->varian->first()->price) }} - {{ number_format($item->varian->last()->price) }}</strong>
+                            @else
+                            <strong>{{ number_format($item->varian->first()->price) }}</strong>
+                            @endif
                             <small>Stok: {{ $item->available_items }}</small>
                         </span>
                         <hr class="my-2">
@@ -163,7 +167,7 @@
                                     </label>
                                 </small>
                             </div>
-                            <div class="col-4 mt-2">
+                            <div class="col-6 mt-2">
                                 <small>
                                     <label for="jml">
                                         Total Harga: 
@@ -328,7 +332,12 @@
                 });
             });
 
-            
+            $(document).on('click', '.varian', function(e) {
+                $('.varian').removeClass('bg-warning');
+                $('.varian').addClass('bg-secondary');
+                $(e.target).addClass('bg-warning');
+                $(e.target).removeClass('bg-secondary');
+            });
         });
     </script>
 @stop
