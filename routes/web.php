@@ -45,6 +45,10 @@ Route::middleware(['auth', 'verified'])->group(function() {
         });
         Route::get('/aksesoris', [ProdukViewsController::class, 'aksesoris'])->name('aksesoris');
         Route::get('/servis', [ProdukViewsController::class, 'servis'])->name('servis');
+        Route::prefix('json')->group(function() {
+            Route::get('/detail-handphone/{id}', [ProdukHandphoneController::class, 'getDetailHandphone'])->name('getDetailHandphone');
+            Route::get('/varian-handphone/{id}', [ProdukHandphoneController::class, 'getVarianHandphone'])->name('getVarianHandphone');
+        });
     });
     // keuangan
     Route::prefix('/keuangan')->group(function() {

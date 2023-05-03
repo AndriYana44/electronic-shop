@@ -70,7 +70,7 @@
                                     Edit
                                 </a>
                             </div>
-                            <a href="#" class="d-block btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#sellItem{{ $item->id }}">Jual</a>
+                            <a href="#" class="d-block btn btn-sm btn-success sell" data-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#sellItem{{ $item->id }}">Jual</a>
                         </div>
                     </div>
                 </div>
@@ -156,14 +156,14 @@
                             </div>
                             <div class="col-12">
                                 @foreach($item->varian as $varian)
-                                    <span style="cursor: pointer" class="badge bg-secondary varian mr-2">{{ $varian->varian }}</span>
+                                    <span style="cursor: pointer" data-handphone-id="{{ $item->id }}" data-varian-id="{{ $varian->id }}" class="badge bg-secondary varian mr-2">{{ $varian->varian }}</span>
                                 @endforeach
                             </div>
                             <div class="col-2 mt-2">
                                 <small>
                                     <label for="jml">
                                         Jumlah: 
-                                        <input type="number" name="jml" data-id="{{ $item->id }}" class="form-control" value="1" placeholder="0" id="jml">
+                                        <input type="number" name="jml" data-id="{{ $item->id }}" class="form-control jml" value="1" placeholder="0" id="jml{{ $item->id }}">
                                     </label>
                                 </small>
                             </div>
@@ -172,10 +172,12 @@
                                     <label for="jml">
                                         Total Harga: 
                                         <input type="text" style="font-size: 12px" data-price="{{ $item->price }}" value="Rp.{{ number_format($item->price) }}" class="form-control" id="displaytotal{{ $item->id }}" disabled>
-                                        <input type="text" value="{{ $item->price }}" name="total" class="form-control" id="inputtotal{{ $item->id }}" hidden>
+                                        <input type="text" value="" name="total" class="form-control" id="inputtotal{{ $item->id }}" hidden>
                                     </label>
                                 </small>
                             </div>
+                            <input type="text" name="id_handphone" hidden>
+                            <input type="text" name="id_varian" hidden> 
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -256,20 +258,6 @@
 
             $('.filter-items').val('{{ $item_filtered }}')
 
-            $(document).on('change', '#jml', function(e) {
-                let jml = $(this).val();
-                let id = $(this).data('id');
-                let price = $(`#displaytotal${id}`).data('price');
-                if(jml < 1) {
-                    $(this).val(1);
-                    jml = 1;
-                }
-                
-                fix_price = price*jml
-                $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
-                $(`#inputtotal${id}`).val(fix_price);
-            });
-
             $(document).on('keyup', '#item_price', function() {
                 let currentVal = $(this).val();
                 $(this).val(number_format(currentVal));
@@ -332,11 +320,57 @@
                 });
             });
 
+            let dataVarian = [];
+            $(document).on('click', '.sell', function(e) {
+                let id = $(e.target).data('id');
+                $.ajax(`{{ url('') }}/produk/json/detail-handphone/${id}`, {
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(res) {
+                        $.each(res, (i, v) => {
+                            dataVarian.push(v)
+                        });
+                    }
+                });
+            });
+
             $(document).on('click', '.varian', function(e) {
                 $('.varian').removeClass('bg-warning');
                 $('.varian').addClass('bg-secondary');
                 $(e.target).addClass('bg-warning');
                 $(e.target).removeClass('bg-secondary');
+
+                let varianId = $(e.target).data('varian-id');
+                let handphoneId = $(e.target).data('handphone-id');
+                let jml = $(`#jml${handphoneId}`).val();
+
+                $('input[name=id_handphone]').val(handphoneId);
+                $('input[name=id_varian]').val(varianId);
+
+                $.each(dataVarian[0].varian, (i, v) => {
+                    if(v.id == varianId) {
+                        let price = v.price*jml;
+                        $(`#displaytotal${handphoneId}`).val('Rp.' + number_format(price));
+                        $(`#displaytotal${handphoneId}`).attr('data-price', v.price);
+                        $(`#inputtotal${handphoneId}`).val(price);
+                    }
+                });
+            });
+
+            $(document).on('change', '.jml', function(e) {
+                let jml = $(this).val();
+                let id = $(this).data('id');
+                let price = $(`#displaytotal${id}`).attr('data-price');
+
+                if(jml < 1) {
+                    $(this).val(1);
+                    jml = 1;
+                }
+                
+                fix_price = price*jml;
+
+                $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
+                $(`#inputtotal${id}`).val(fix_price);
             });
         });
     </script>

@@ -109,4 +109,16 @@ class ProdukHandphoneController extends Controller
             'success', 'Item berhasil di hapus!'
         );
     }
+
+    public function getDetailHandphone($id)
+    {
+        $data = ProdukHandphone::with('varian')->where('id', $id)->get();
+        return $data->toJson();
+    }
+
+    public function getVarianHandphone($id)
+    {
+        $data = HandphoneVarian::with('handphone')->where('id', $id)->get();
+        return $data->toJson();
+    }
 }
