@@ -16,7 +16,7 @@ class ProdukHandphoneController extends Controller
     public function index(request $request): View
     {
         $item_detail = ProdukHandphone::with('varian')->get();
-        $cart = Cart::all();
+        $cart = Cart::with('itemHandphone')->get();
         $filtered = null;
         if($request->itemFiltered != null) {
             $filtered = $request->itemFiltered;

@@ -32,6 +32,42 @@
                     <b>{{ count($cart) }}</b>
                 </span>
                 @endif
+                <div class="item-cart">
+                    <div class="item">
+                        <div class="col-12">
+                            <div class="card">
+                            @php $total = 0; @endphp
+                            @foreach($cart as $c)
+                            @php $total += ($c->price*$c->jumlah); @endphp
+                            <div class="card-body d-flex flex-column">
+                                <div class="card-title">
+                                    <span class="badge bg-danger">x</span>
+                                    <strong>{{ $c->name }}</strong>
+                                </div>
+                                <small class="card-text">Varian: {{ $c->itemHandphone->first()->varian }}</small>
+                                <span class="d-flex flex-column">
+                                    <b><small class="text-success">Rp.{{ number_format($c->price) }}</small></b> 
+                                    <div class="input-group">
+                                        <input type="button" value="-" class="button-minus" data-field="quantity">
+                                        <input type="number" step="1" max="" value="1" name="quantity" class="quantity-field">
+                                        <input type="button" value="+" class="button-plus" data-field="quantity">
+                                    </div>
+                                </span>
+                            </div>
+                            <hr>
+                            @endforeach
+                            <div class="card-footer d-flex flex-column">
+                                <span>
+                                    <strong>
+                                        <b class="text-success">Total Harga: Rp.{{ number_format($total) }}</b>
+                                    </strong>
+                                </span>
+                                <a href="#" class="btn btn-primary btn-sm">Checkout</a>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -156,7 +192,7 @@
                             </div>
                             <div class="col-12">
                                 @foreach($item->varian as $varian)
-                                    <span style="cursor: pointer" data-handphone-id="{{ $item->id }}" data-varian-id="{{ $varian->id }}" class="badge bg-secondary varian mr-2">{{ $varian->varian }}</span>
+                                    <span style="cursor: pointer" data-handphone-id="{{ $item->id }}" data-varian-id="{{ $varian->id }}" class="badge bg-secondary varian-item mr-2">{{ $varian->varian }}</span>
                                 @endforeach
                             </div>
                             <div class="col-2 mt-2">
@@ -178,6 +214,7 @@
                             </div>
                             <input type="text" name="id_handphone" hidden>
                             <input type="text" name="id_varian" hidden> 
+                            <input type="text" name="harga" hidden>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -334,9 +371,9 @@
                 });
             });
 
-            $(document).on('click', '.varian', function(e) {
-                $('.varian').removeClass('bg-warning');
-                $('.varian').addClass('bg-secondary');
+            $(document).on('click', '.varian-item', function(e) {
+                $('.varian-item').removeClass('bg-warning');
+                $('.varian-item').addClass('bg-secondary');
                 $(e.target).addClass('bg-warning');
                 $(e.target).removeClass('bg-secondary');
 
@@ -350,6 +387,7 @@
                 $.each(dataVarian[0].varian, (i, v) => {
                     if(v.id == varianId) {
                         let price = v.price*jml;
+                        $('input[name=harga]').val(v.price)
                         $(`#displaytotal${handphoneId}`).val('Rp.' + number_format(price));
                         $(`#displaytotal${handphoneId}`).attr('data-price', v.price);
                         $(`#inputtotal${handphoneId}`).val(price);
@@ -372,6 +410,52 @@
                 $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
                 $(`#inputtotal${id}`).val(fix_price);
             });
+
+            $('.cart').click(function(e) {
+                $('.item-cart').toggleClass('item-cart-show');
+                let w = $(document).find('.item-cart').width();
+                let h = $('.item-cart').height();
+                if($('.item-cart').hasClass('item-cart-show')) {
+                    $('.item-cart').css('bottom', `-${h+10}px`);
+                    $('.item-cart').css('left', `-${w}px`);
+                }else{
+                    $('.item-cart').removeAttr('style');
+                }
+            });
+
+            function incrementValue(e) {
+                e.preventDefault();
+                var fieldName = $(e.target).data('field');
+                var parent = $(e.target).closest('div');
+                var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+
+                if (!isNaN(currentVal)) {
+                    parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
+                } else {
+                    parent.find('input[name=' + fieldName + ']').val(0);
+                }
+                }
+
+                function decrementValue(e) {
+                e.preventDefault();
+                var fieldName = $(e.target).data('field');
+                var parent = $(e.target).closest('div');
+                var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+
+                if (!isNaN(currentVal) && currentVal > 0) {
+                    parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
+                } else {
+                    parent.find('input[name=' + fieldName + ']').val(0);
+                }
+                }
+
+                $('.input-group').on('click', '.button-plus', function(e) {
+                incrementValue(e);
+                });
+
+                $('.input-group').on('click', '.button-minus', function(e) {
+                decrementValue(e);
+                });
         });
     </script>
 @stop

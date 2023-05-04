@@ -17,9 +17,10 @@ class ProdukViewsController extends Controller
     public function cart(Request $request)
     {
         $cart = new Cart();
+        $cart->id_kategori_item = $request->id_varian;
         $cart->name = $request->name;
-        $cart->price = $request->total;
-        $cart->kategori_items = $request->kategori;
+        $cart->price = $request->harga;
+        $cart->kategori_item = $request->kategori;
         $cart->jumlah = $request->jml;
         $cart->save();
 
