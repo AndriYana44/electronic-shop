@@ -44,13 +44,13 @@
                                     <span class="badge bg-danger">x</span>
                                     <strong>{{ $c->name }}</strong>
                                 </div>
-                                <small class="card-text">Varian: {{ $c->itemHandphone->first()->varian }}</small>
+                                <small class="card-text">Varian: {{ $c->varian }}</small>
                                 <span class="d-flex flex-column">
-                                    <b><small class="text-success">Rp.{{ number_format($c->price) }}</small></b> 
+                                    <b><small data-price="{{ $c->price }}" class="text-success cart-item-price">Rp.{{ number_format($c->price) }}</small></b> 
                                     <div class="input-group">
-                                        <input type="button" value="-" class="button-minus" data-field="quantity">
-                                        <input type="number" step="1" max="" value="1" name="quantity" class="quantity-field">
-                                        <input type="button" value="+" class="button-plus" data-field="quantity">
+                                        <button type="button" class="cart-button-jml button-minus" data-field="quantity">-</button>
+                                        <input type="number" step="1" min="1" max="" value="{{ $c->jumlah }}" name="quantity" class="quantity-field">
+                                        <button type="button"class="cart-button-jml button-plus" data-field="quantity">+</button>
                                     </div>
                                 </span>
                             </div>
@@ -418,6 +418,7 @@
                 if($('.item-cart').hasClass('item-cart-show')) {
                     $('.item-cart').css('bottom', `-${h+10}px`);
                     $('.item-cart').css('left', `-${w}px`);
+                    $('.item-cart').css('width', `${w+50}px`)
                 }else{
                     $('.item-cart').removeAttr('style');
                 }
@@ -456,6 +457,11 @@
                 $('.input-group').on('click', '.button-minus', function(e) {
                 decrementValue(e);
                 });
+            
+            $(document).on('click', '.cart-button-jml', function(e) {
+                const el = $(e.target).parent().prev();
+                console.log($(el).find('small').data('price'));
+            });
         });
     </script>
 @stop

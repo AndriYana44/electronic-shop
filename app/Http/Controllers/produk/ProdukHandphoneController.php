@@ -16,7 +16,12 @@ class ProdukHandphoneController extends Controller
     public function index(request $request): View
     {
         $item_detail = ProdukHandphone::with('varian')->get();
-        $cart = Cart::with('itemHandphone')->get();
+        $cart = DB::table('item_cart as c')
+            ->select('c.name', 'c.kategori_item', 'c.price', 'v.varian',
+                DB::raw('sum(jumlah) as jumlah, sum(c.price*jumlah) as total'))
+            ->leftJoin('item_handphone_varian as v', 'v.id', '=', 'c.id_kategori_item')
+            ->groupBy('c.name', 'c.kategori_item', 'c.price', 'v.varian')
+            ->get();
         $filtered = null;
         if($request->itemFiltered != null) {
             $filtered = $request->itemFiltered;
