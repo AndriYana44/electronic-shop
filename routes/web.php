@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\produk\ProdukHandphoneController;
@@ -24,6 +25,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function() {
     // dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // cart
+    Route::prefix('cart')->group(function() {
+        Route::post('/changeDataCart', [CartController::class, 'changeDataCart']);
+    });
     // produk
     Route::prefix('/produk')->group(function() {
         Route::get('/', [ProdukViewsController::class, 'index'])->name('produk');

@@ -17,11 +17,12 @@ class ProdukHandphoneController extends Controller
     {
         $item_detail = ProdukHandphone::with('varian')->get();
         $cart = DB::table('item_cart as c')
-            ->select('c.name', 'c.kategori_item', 'c.price', 'v.varian',
+            ->select('c.id_kategori_item', 'c.name', 'c.kategori_item', 'c.price', 'v.varian',
                 DB::raw('sum(jumlah) as jumlah, sum(c.price*jumlah) as total'))
             ->leftJoin('item_handphone_varian as v', 'v.id', '=', 'c.id_kategori_item')
-            ->groupBy('c.name', 'c.kategori_item', 'c.price', 'v.varian')
+            ->groupBy('c.id_kategori_item', 'c.name', 'c.kategori_item', 'c.price', 'v.varian')
             ->get();
+
         $filtered = null;
         if($request->itemFiltered != null) {
             $filtered = $request->itemFiltered;

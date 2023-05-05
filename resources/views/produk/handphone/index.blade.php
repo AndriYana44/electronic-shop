@@ -25,7 +25,7 @@
             </div>
             <div class="cart-place">
                 <div class="cart">
-                    <img src="{{ asset('img/cart-icon.png') }}" alt="icon-cart">
+                    <img class="cart" src="{{ asset('img/cart-icon.png') }}" alt="icon-cart">
                 </div>
                 @if(count($cart) > 0)
                 <span class="cart-notif">
@@ -41,11 +41,12 @@
                             @php $total += ($c->price*$c->jumlah); @endphp
                             <div class="card-body d-flex flex-column">
                                 <div class="card-title">
-                                    <span class="badge bg-danger">x</span>
+                                    <span class="badge bg-danger delete-item-cart">x</span>
                                     <strong>{{ $c->name }}</strong>
                                 </div>
                                 <small class="card-text">Varian: {{ $c->varian }}</small>
-                                <span class="d-flex flex-column">
+                                <input type="text" name="cart-id" value="{{ $c->id_kategori_item }}" hidden>
+                                <span class="d-flex flex-column x-cart">
                                     <b><small data-price="{{ $c->price }}" class="text-success cart-item-price">Rp.{{ number_format($c->price) }}</small></b> 
                                     <div class="input-group">
                                         <button type="button" class="cart-button-jml button-minus" data-field="quantity">-</button>
@@ -59,7 +60,7 @@
                             <div class="card-footer d-flex flex-column">
                                 <span>
                                     <strong>
-                                        <b class="text-success">Total Harga: Rp.{{ number_format($total) }}</b>
+                                        <b class="text-success total-price">Total Harga: Rp.{{ number_format($total) }}</b>
                                     </strong>
                                 </span>
                                 <a href="#" class="btn btn-primary btn-sm">Checkout</a>
@@ -280,7 +281,6 @@
 @stop
 @section('script')
     <script>
-
         $(document).ready(function() {
             $('.cart-notif').fadeIn('3000');
 
@@ -359,6 +359,7 @@
 
             let dataVarian = [];
             $(document).on('click', '.sell', function(e) {
+                dataVarian = [];
                 let id = $(e.target).data('id');
                 $.ajax(`{{ url('') }}/produk/json/detail-handphone/${id}`, {
                     dataType: 'json',
@@ -411,19 +412,6 @@
                 $(`#inputtotal${id}`).val(fix_price);
             });
 
-            $('.cart').click(function(e) {
-                $('.item-cart').toggleClass('item-cart-show');
-                let w = $(document).find('.item-cart').width();
-                let h = $('.item-cart').height();
-                if($('.item-cart').hasClass('item-cart-show')) {
-                    $('.item-cart').css('bottom', `-${h+10}px`);
-                    $('.item-cart').css('left', `-${w}px`);
-                    $('.item-cart').css('width', `${w+50}px`)
-                }else{
-                    $('.item-cart').removeAttr('style');
-                }
-            });
-
             function incrementValue(e) {
                 e.preventDefault();
                 var fieldName = $(e.target).data('field');
@@ -433,34 +421,53 @@
                 if (!isNaN(currentVal)) {
                     parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
                 } else {
-                    parent.find('input[name=' + fieldName + ']').val(0);
+                    parent.find('input[name=' + fieldName + ']').val(1);
                 }
-                }
+            }
 
-                function decrementValue(e) {
+            function decrementValue(e) {
                 e.preventDefault();
                 var fieldName = $(e.target).data('field');
                 var parent = $(e.target).closest('div');
                 var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
 
-                if (!isNaN(currentVal) && currentVal > 0) {
+                if (!isNaN(currentVal) && currentVal > 1) {
                     parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
                 } else {
-                    parent.find('input[name=' + fieldName + ']').val(0);
+                    parent.find('input[name=' + fieldName + ']').val(1);
                 }
-                }
+            }
 
-                $('.input-group').on('click', '.button-plus', function(e) {
+            $('.input-group').on('click', '.button-plus', function(e) {
                 incrementValue(e);
-                });
+            });
 
-                $('.input-group').on('click', '.button-minus', function(e) {
+            $('.input-group').on('click', '.button-minus', function(e) {
                 decrementValue(e);
-                });
+            });
             
             $(document).on('click', '.cart-button-jml', function(e) {
-                const el = $(e.target).parent().prev();
-                console.log($(el).find('small').data('price'));
+                const el = $(e.target).parent().prev().find('small');
+                let price = $(el).data('price');
+                let id_cart = $(e.target).parents('.x-cart').siblings("input[name='cart-id']").val();
+                let jml = $(e.target).siblings('.quantity-field').val();
+                const urlCart = `{{ url('cart/changeDataCart') }}`;
+                
+                $.ajax({
+                    type: 'POST',
+                    url: urlCart,
+                    data: {id:id_cart, price:price, jml:jml},
+                    success: function(res) {
+                        let data = JSON.parse(res);
+                        let currentPrice = 0;
+                        $.each(data, function(i, v) {
+                            if(!isNaN(jml)) {
+                                currentPrice += (v.price * jml);
+                            }
+                        });
+                        $('.total-price').html(`Rp.${number_format(currentPrice)}`);
+                    }
+                })
             });
         });
     </script>
