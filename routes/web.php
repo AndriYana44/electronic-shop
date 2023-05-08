@@ -27,12 +27,13 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     // cart
     Route::prefix('cart')->group(function() {
+        Route::get('/', [CartController::class, 'index'])->name('cart');
+        Route::post('/', [ProdukViewsController::class, 'cart'])->name('cart');
         Route::post('/changeDataCart', [CartController::class, 'changeDataCart']);
     });
     // produk
     Route::prefix('/produk')->group(function() {
         Route::get('/', [ProdukViewsController::class, 'index'])->name('produk');
-        Route::post('/cart', [ProdukViewsController::class, 'cart'])->name('cart');
         Route::prefix(('/handphone'))->group(function() {
             Route::get('/', [ProdukHandphoneController::class, 'index'])->name('handphone');
             Route::post('/', [ProdukHandphoneController::class, 'index'])->name('handphone');

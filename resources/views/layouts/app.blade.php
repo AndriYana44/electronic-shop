@@ -55,23 +55,6 @@
         <script src="{{ asset('js/swall.js') }}"></script>
         
         <script>
-            let w = $(document).find('.item-cart').width();
-            let h = $('.item-cart').height();
-            $(document).click((e) => {
-                if(!$(e.target).closest('.item-place').length && !$(e.target).hasClass('cart')) {
-                    e.preventDefault();
-                    $('.item-cart').removeClass('item-cart-show');
-                    $('.item-cart').removeAttr('style');
-                }else{
-                    $('.item-cart').addClass('item-cart-show');
-                    if(w < w+10) {
-                        $('.item-cart').css('bottom', `-${h+10}px`);
-                        $('.item-cart').css('left', `-${w}px`);
-                        $('.item-cart').css('width', `${w+50}px`)
-                    }
-                }
-            });
-
             function number_format (number, decimals, decPoint, thousandsSep) { 
                 number = (number + '').replace(/[^0-9+\-Ee.]/g, '')
                 var n = !isFinite(+number) ? 0 : +number

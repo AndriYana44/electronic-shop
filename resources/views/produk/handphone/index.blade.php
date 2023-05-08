@@ -1,4 +1,7 @@
 @extends('produk.index')
+@section('navigation-produk')
+    @include('layouts.navigation-produk')
+@stop
 @section('main-content')
     <div class="item-menus row my-3">
         <div class="col-12 d-flex justify-between">
@@ -24,9 +27,11 @@
                 </div>
             </div>
             <div class="cart-place">
-                <div class="cart">
-                    <img class="cart" src="{{ asset('img/cart-icon.png') }}" alt="icon-cart">
-                </div>
+                <a href="{{ route('cart') }}">
+                    <div class="cart">
+                        <img class="cart" src="{{ asset('img/cart-icon.png') }}" alt="icon-cart">
+                    </div>
+                </a>
                 @if(count($cart) > 0)
                 <span class="cart-notif">
                     <b>{{ count($cart) }}</b>
@@ -410,64 +415,6 @@
 
                 $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
                 $(`#inputtotal${id}`).val(fix_price);
-            });
-
-            function incrementValue(e) {
-                e.preventDefault();
-                var fieldName = $(e.target).data('field');
-                var parent = $(e.target).closest('div');
-                var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
-
-                if (!isNaN(currentVal)) {
-                    parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
-                } else {
-                    parent.find('input[name=' + fieldName + ']').val(1);
-                }
-            }
-
-            function decrementValue(e) {
-                e.preventDefault();
-                var fieldName = $(e.target).data('field');
-                var parent = $(e.target).closest('div');
-                var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
-
-                if (!isNaN(currentVal) && currentVal > 1) {
-                    parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
-                } else {
-                    parent.find('input[name=' + fieldName + ']').val(1);
-                }
-            }
-
-            $('.input-group').on('click', '.button-plus', function(e) {
-                incrementValue(e);
-            });
-
-            $('.input-group').on('click', '.button-minus', function(e) {
-                decrementValue(e);
-            });
-            
-            $(document).on('click', '.cart-button-jml', function(e) {
-                const el = $(e.target).parent().prev().find('small');
-                let price = $(el).data('price');
-                let id_cart = $(e.target).parents('.x-cart').siblings("input[name='cart-id']").val();
-                let jml = $(e.target).siblings('.quantity-field').val();
-                const urlCart = `{{ url('cart/changeDataCart') }}`;
-                
-                $.ajax({
-                    type: 'POST',
-                    url: urlCart,
-                    data: {id:id_cart, price:price, jml:jml},
-                    success: function(res) {
-                        let data = JSON.parse(res);
-                        let currentPrice = 0;
-                        $.each(data, function(i, v) {
-                            if(!isNaN(jml)) {
-                                currentPrice += (v.price * jml);
-                            }
-                        });
-                        $('.total-price').html(`Rp.${number_format(currentPrice)}`);
-                    }
-                })
             });
         });
     </script>
