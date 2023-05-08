@@ -132,5 +132,18 @@
             input.closest('td').nextElementSibling.textContent = `Rp${subtotal.toLocaleString()},-`;
         });
     });
+
+    // removeButtons.forEach((button) => {
+    //     button.addEventListener('click', (e) => {
+    //         let url = `{{ route('') }}`
+    //         $.ajax(url, {
+    //             dataType: 'json',
+    //             type: 'delete',
+    //             success: {
+
+    //             }
+    //         })
+    //     });
+    // });
 </script>
 @stop
