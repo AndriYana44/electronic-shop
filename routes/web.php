@@ -29,7 +29,8 @@ Route::middleware(['auth', 'verified'])->group(function() {
     Route::prefix('cart')->group(function() {
         Route::get('/', [CartController::class, 'index'])->name('cart');
         Route::post('/', [ProdukViewsController::class, 'cart'])->name('cart');
-        Route::post('/changeDataCart', [CartController::class, 'changeDataCart']);
+        Route::patch('/changeDataCart/{id}', [CartController::class, 'changeDataCart']);
+        Route::delete('/deleteDataCart/{id}', [CartController::class, 'deleteDataCart']);
     });
     // produk
     Route::prefix('/produk')->group(function() {

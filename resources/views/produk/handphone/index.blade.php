@@ -193,8 +193,11 @@
                                 <hr class="my-2">
                                 <small>Tersedia: {{ $item->available_items }}</small>
                             </div>
-                            <div class="col-12 mt-3">
+                            <div class="col-12 mt-3 d-flex flex-column">
                                 <span>pilih varian</span>
+                                <div id="varian-alert-{{ $item->id }}" class="alert-varian my-2">
+                                    <span class="px-3 py-2"  style="border-radius: 8px; font-size:14px; background-color: rgb(248 215 218);color: rgb(218 45 61);"><strong>Note:</strong> pilih varian terlebih dahulu!</span>
+                                </div>
                             </div>
                             <div class="col-12">
                                 @foreach($item->varian as $varian)
@@ -287,7 +290,9 @@
 @section('script')
     <script>
         $(document).ready(function() {
-            $('.cart-notif').fadeIn('3000');
+            $.each($(`.alert-varian`), (i,v) => {
+                $(v).hide();
+            });
 
             $('.filter-items').select2({
                 placeholder: "{{ $item_filtered == null ? 'Filter item..' : $item_filtered}}",
@@ -337,7 +342,19 @@
                     e.preventDefault();
                     let url = '{{ route("checkout-handphone", ":id") }}';
                     url = url.replace(':id', id);
-                    $(`#sell${id}`).attr('action', url).submit();
+                    let varianEl = $(e.target).closest('.modal-content').find('.varian-item');
+                    let varianSelected = 0;
+                    $.each(varianEl, function(i,v) {
+                        varianSelected += $(v).hasClass('selected') ? 1 : 0
+                    });
+                    if(varianSelected) {
+                        $(`#sell${id}`).attr('action', url).submit();
+                    }else{
+                        $(`#varian-alert-${id}`).fadeTo(2500, 500)
+                        .slideUp(500, function() {
+                            $(`#varian-alert-${id}`).slideUp(500);
+                        });
+                    }
                 } else if (_target.indexOf('btn-cart') > -1) {
                     e.preventDefault();
                     let url = '{{ route("cart", ":id") }}';
@@ -379,7 +396,9 @@
 
             $(document).on('click', '.varian-item', function(e) {
                 $('.varian-item').removeClass('bg-warning');
+                $('.varian-item').removeClass('selected');
                 $('.varian-item').addClass('bg-secondary');
+                $(e.target).addClass('selected');
                 $(e.target).addClass('bg-warning');
                 $(e.target).removeClass('bg-secondary');
 

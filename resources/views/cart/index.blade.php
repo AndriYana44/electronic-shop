@@ -1,7 +1,14 @@
 @extends('produk.index')
 @section('main-content')
 <link href="{{ asset('css/cart.css') }}" rel="stylesheet" />
-    <table class="table table-bordered">
+    <span class="mb-3">
+        <strong>
+            <a href="{{ route('handphone') }}">
+                <i class="fa fa-location-arrow"></i> Produk / 
+            </a>
+        </strong>Keranjang
+    </span>
+    <table class="table table-bordered mt-3">
         <thead class="bg-warning">
             <tr>
                 <th class="text-center">Produk</th>
@@ -12,8 +19,11 @@
             </tr>
         </thead>
         <tbody>
+            @php $total = 0 @endphp
             @foreach($data as $key => $item)
+            @php $total += $item->total @endphp
             <tr>
+                <td hidden><input class="data-id" type="number" value="{{ $item->id }}"></td>
                 <td>
                     <div class="row">
                         <div class="col-6 d-flex flex-column">
@@ -42,9 +52,13 @@
         </tbody>
         <tfoot>
             <tr>
-            <td colspan="3">Total</td>
-            <td>Rp100.000,-</td>
-            <td><button class="btn btn-outline-success btn-sm">Checkout</button></td>
+                <td colspan="3">Total</td>
+                <td class="total">Rp.{{ number_format($total) }}</td>
+                <td>
+                    <button class="btn btn-outline-success btn-sm checkout-cart">
+                    Checkout
+                    </button>
+                </td>
             </tr>
         </tfoot>
     </table>
@@ -54,9 +68,9 @@
 <script>
     function incrementValue(e) {
         e.preventDefault();
-        var fieldName = $(e.target).data('field');
-        var parent = $(e.target).closest('div');
-        var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+        let fieldName = $(e.target).data('field');
+        let parent = $(e.target).closest('div');
+        let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
 
         if (!isNaN(currentVal)) {
             parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
@@ -67,9 +81,9 @@
 
     function decrementValue(e) {
         e.preventDefault();
-        var fieldName = $(e.target).data('field');
-        var parent = $(e.target).closest('div');
-        var currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+        let fieldName = $(e.target).data('field');
+        let parent = $(e.target).closest('div');
+        let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
 
         if (!isNaN(currentVal) && currentVal > 1) {
             parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
@@ -93,12 +107,36 @@
 
     // Loop melalui semua tombol hapus dan tambahkan event listener
     removeButtons.forEach((button) => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (e) => {
             // Ambil elemen yang akan dihapus (yaitu elemen induk dari tombol hapus)
             const row = button.parentElement.parentElement;
-
-            // Hapus elemen dari dokumen
-            row.remove();
+            let idx = row.querySelector('.data-id').value;
+            let url = `{{ url('') }}/cart/deleteDataCart/${idx}`;
+            swal({
+                text: `akan di hapus dari cart!`,
+                icon: "warning",
+                buttons: ['No!', true],
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if(willDelete) {
+                    $.ajax(url, {
+                        dataType: 'json',
+                        type: 'delete',
+                        success: function(res) {
+                            let total = 0;
+                            res.forEach((v) => {
+                                total += (parseInt(v.price) * parseInt(v.jumlah));
+                            });
+                            const totalEl = document.querySelector('.total');
+                            totalEl.textContent =  `Rp.${number_format(total)}`;
+                            swal("Berhasil di hapus!", { icon: "success"});
+                            // Hapus elemen dari dokumen
+                            row.remove();
+                        }
+                    })
+                }
+            });
         });
     });
 
@@ -108,6 +146,9 @@
     // Loop melalui semua tombol dan tambahkan event listener
     quantityButtons.forEach((button) => {
         button.addEventListener("click", (e) => {
+            // Ambil parent element dari button
+            const parentEl = button.parentElement.parentElement.parentElement;
+            const idx = parentEl.querySelector('.data-id').value; 
             // Ambil input dan nilai jumlah produk
             const input = button.parentElement.querySelector("input");
             let jml = $(e.target).siblings('.quantity-field').val();
@@ -129,21 +170,32 @@
             price = price.match(/\d+/g).join('');
             const subtotal = parseInt(price) * parseInt(jml);
 
-            input.closest('td').nextElementSibling.textContent = `Rp${subtotal.toLocaleString()},-`;
+            // disabled button checkout
+            const btncheckout = parentEl.parentElement.parentElement.querySelector('.checkout-cart');
+            btncheckout.setAttribute('disabled', 'true');
+            
+            const url = `{{ url('') }}/cart/changeDataCart/${idx}`;
+            $.ajax(url, {
+                dataType: 'json',
+                type: 'patch',
+                data: {jml:jml},
+                success: function(res) {
+                    let total = 0;
+                    res.forEach((v) => {
+                        total += (parseInt(v.price) * parseInt(v.jumlah));
+                    })
+                    const tableEl = parentEl.parentElement.parentElement;
+                    const totalEl = tableEl.querySelector('.total');
+                    totalEl.textContent =  `Rp.${number_format(total)}`;
+                } ,
+                complete: function() {
+                    btncheckout.removeAttribute('disabled');
+                }
+            });
+
+
+            input.closest('td').nextElementSibling.textContent = `Rp${subtotal.toLocaleString()}`;
         });
     });
-
-    // removeButtons.forEach((button) => {
-    //     button.addEventListener('click', (e) => {
-    //         let url = `{{ route('') }}`
-    //         $.ajax(url, {
-    //             dataType: 'json',
-    //             type: 'delete',
-    //             success: {
-
-    //             }
-    //         })
-    //     });
-    // });
 </script>
 @stop
