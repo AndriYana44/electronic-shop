@@ -20,8 +20,7 @@ class ProdukViewsController extends Controller
         $checkDataIfExist = DB::table('item_cart')
             ->select(DB::raw('count(id) as jml'))
             ->where([
-                'name' => $request->name,
-                'kategori_item' => $request->kategori
+                'id_kategori_item' => $request->id_varian
             ])->get();
         
         if($checkDataIfExist->first()->jml > 0) {

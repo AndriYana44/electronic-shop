@@ -133,6 +133,24 @@ body {
 .item-cart-show {
     display: inline-block;
 }
+input,
+textarea {
+  border: 1px solid #eeeeee;
+  box-sizing: border-box;
+  margin: 0;
+  outline: none;
+  padding: 10px;
+}
+
+input[type="button"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
 
 .input-group {
   clear: both;
@@ -176,4 +194,9 @@ body {
 
 .button-plus {
   left: -10px;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
 }

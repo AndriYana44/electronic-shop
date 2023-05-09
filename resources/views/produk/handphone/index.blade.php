@@ -204,11 +204,15 @@
                                     <span style="cursor: pointer" data-handphone-id="{{ $item->id }}" data-varian-id="{{ $varian->id }}" class="badge bg-secondary varian-item mr-2">{{ $varian->varian }}</span>
                                 @endforeach
                             </div>
-                            <div class="col-2 mt-2">
+                            <div class="col-3 mt-2">
                                 <small>
                                     <label for="jml">
                                         Jumlah: 
-                                        <input type="number" name="jml" data-id="{{ $item->id }}" class="form-control jml" value="1" placeholder="0" id="jml{{ $item->id }}">
+                                        <div class="input-group d-flex justify-center quantity">
+                                            <button type="button" class="cart-button-jml button-minus" data-field="jml" data-id="{{ $item->id }}">-</button>
+                                            <input type="number" name="jml" data-id="{{ $item->id }}" class="form-control jml quantity-field" value="1" placeholder="0" id="jml{{ $item->id }}">
+                                            <button type="button"class="cart-button-jml button-plus" data-field="jml" data-id="{{ $item->id }}">+</button>
+                                        </div>
                                     </label>
                                 </small>
                             </div>
@@ -290,6 +294,50 @@
 @section('script')
     <script>
         $(document).ready(function() {
+            function incrementValue(e) {
+                e.preventDefault();
+                let id = $(e.target).data('id');
+                let fieldName = $(e.target).data('field');
+                let parent = $(e.target).closest('div');
+                let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+                let price = $(`#displaytotal${id}`).attr('data-price');
+
+                if (!isNaN(currentVal)) {
+                    parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
+                    let fix_price = price*parent.find('input[name=' + fieldName + ']').val();
+                    $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
+                    $(`#inputtotal${id}`).val(fix_price);
+                } else {
+                    parent.find('input[name=' + fieldName + ']').val(1);
+                }
+            }
+
+            function decrementValue(e) {
+                e.preventDefault();
+                let id = $(e.target).data('id');
+                let fieldName = $(e.target).data('field');
+                let parent = $(e.target).closest('div');
+                let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+                let price = $(`#displaytotal${id}`).attr('data-price');
+
+                if (!isNaN(currentVal) && currentVal > 1) {
+                    parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
+                    let fix_price = price*parent.find('input[name=' + fieldName + ']').val();
+                    $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
+                    $(`#inputtotal${id}`).val(fix_price);
+                } else {
+                    parent.find('input[name=' + fieldName + ']').val(1);
+                }
+            }
+
+            $('.input-group').on('click', '.button-plus', function(e) {
+                incrementValue(e);
+            });
+
+            $('.input-group').on('click', '.button-minus', function(e) {
+                decrementValue(e);
+            });
+
             $.each($(`.alert-varian`), (i,v) => {
                 $(v).hide();
             });
@@ -418,22 +466,6 @@
                         $(`#inputtotal${handphoneId}`).val(price);
                     }
                 });
-            });
-
-            $(document).on('change', '.jml', function(e) {
-                let jml = $(this).val();
-                let id = $(this).data('id');
-                let price = $(`#displaytotal${id}`).attr('data-price');
-
-                if(jml < 1) {
-                    $(this).val(1);
-                    jml = 1;
-                }
-                
-                fix_price = price*jml;
-
-                $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
-                $(`#inputtotal${id}`).val(fix_price);
             });
         });
     </script>
