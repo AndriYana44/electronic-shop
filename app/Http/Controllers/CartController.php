@@ -99,7 +99,5 @@ class CartController extends Controller
         }
 
         return back()->with(['success' => 'Item berhasil di checkout!']);
-        // oppo reno stok = 4 - 2 = 2
-        // samsung note stok = 3 - 1 = 2
     }
 }

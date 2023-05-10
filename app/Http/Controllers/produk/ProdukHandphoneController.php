@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\produk;
 
 use App\Http\Controllers\Controller;
+use App\Models\produk\handphone\HandphoneSold;
 use App\Models\produk\Cart;
 use App\Models\produk\handphone\HandphoneVarian;
 use App\Models\produk\ProdukHandphone;
@@ -68,7 +69,21 @@ class ProdukHandphoneController extends Controller
 
     public function checkout(Request $request, $id)
     {
-        dd($request->all());
+        // insert data ke table item_handphone_sold
+        HandphoneSold::insert([
+            'handphone_id' => $request->id_handphone,
+            'handphone_varian_id' => $request->id_varian,
+            'sold_at_price' => $request->harga,
+            'jumlah' => $request->jml
+        ]);
+        
+        // mencari data untuk update stok pada field available_items
+        $data = HandphoneVarian::where('id', $request->id_varian);
+        $dataItems = $data->get();
+        $availableItems = $dataItems->first()->available_items;
+        $data->update(['available_items' => $availableItems-$request->jml]);
+
+        return back()->with(['success' => 'Berhasil checkout!']);
     }
 
     public function update(Request $request, $id)
