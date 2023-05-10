@@ -220,7 +220,7 @@
                                     </label>
                                 </small>
                             </div>
-                            <div class="col-2 mt-2 stok d-flex justify-content-center align-items-center"></div>
+                            <div class="col-2 mt-2 stok-{{ $item->id }} d-flex justify-content-center align-items-center"></div>
                             <input type="text" name="id_handphone" hidden>
                             <input type="text" name="id_varian" hidden> 
                             <input type="text" name="harga" hidden>
@@ -455,7 +455,7 @@
                         $(`#displaytotal${handphoneId}`).val('Rp.' + number_format(price));
                         $(`#displaytotal${handphoneId}`).attr('data-price', v.price);
                         $(`#inputtotal${handphoneId}`).val(price);
-                        $('.stok').html(`<small>stok: ${v.available_items}</small>`);
+                        $(`.stok-${handphoneId}`).html(`<small>stok: ${v.available_items}</small>`);
                     }
                 });
             });
