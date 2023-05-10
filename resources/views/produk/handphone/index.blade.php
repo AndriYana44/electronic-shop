@@ -98,7 +98,6 @@
                             @else
                             <strong>{{ number_format($item->varian->first()->price) }}</strong>
                             @endif
-                            <small>Stok: {{ $item->available_items }}</small>
                         </span>
                         <hr class="my-2">
                         <div class="action">
@@ -141,10 +140,6 @@
                             <label for="spesifikasi">Spesifikasi</label>
                         </div>
                         <div class="mb-3">
-                            <label for="harga" class="form-label">Stok Handphone</label>
-                            <input type="number" name="stok" class="form-control" autocomplete="off" placeholder="123" id="stok">
-                        </div>
-                        <div class="mb-3">
                             <label for="formFileSm" class="form-label">Foto Handphone</label>
                             <input class="form-control" name="picture" id="formFileSm" type="file">
                         </div>
@@ -154,6 +149,7 @@
                                 <input type="text" name="varian[]" class="form-control" placeholder="Varian.." autocomplete="off">
                             </div> 
                             <input type="text" name="harga[]" id="item_price" class="form-control mt-2" placeholder="Harga.." autocomplete="off">
+                            <input type="number" name="stok[]" class="form-control mt-2" autocomplete="off" placeholder="123">
                         </div>
                         <div class="varian">
                             
@@ -191,7 +187,6 @@
                             <div class="col-4">
                                 Spek: <br> {{ $item->spesification }}
                                 <hr class="my-2">
-                                <small>Tersedia: {{ $item->available_items }}</small>
                             </div>
                             <div class="col-12 mt-3 d-flex flex-column">
                                 <span>pilih varian</span>
@@ -216,7 +211,7 @@
                                     </label>
                                 </small>
                             </div>
-                            <div class="col-6 mt-2">
+                            <div class="col-4 mt-2">
                                 <small>
                                     <label for="jml">
                                         Total Harga: 
@@ -225,6 +220,7 @@
                                     </label>
                                 </small>
                             </div>
+                            <div class="col-2 mt-2 stok d-flex justify-content-center align-items-center"></div>
                             <input type="text" name="id_handphone" hidden>
                             <input type="text" name="id_varian" hidden> 
                             <input type="text" name="harga" hidden>
@@ -267,10 +263,6 @@
                         <div class="form-floating mb-3">
                             <textarea class="form-control" name="spesifikasi" placeholder="Leave a comment here" id="spesifikasi" style="height: 100px">{{ $item->spesification }}</textarea>
                             <label for="spesifikasi">Spesifikasi</label>
-                        </div>
-                        <div class="mb-3">
-                            <label for="harga" class="form-label">Stok Handphone</label>
-                            <input type="number" name="stok" value="{{ $item->available_items }}" class="form-control" autocomplete="off" placeholder="123" id="stok">
                         </div>
                         <div class="mb-3">
                             <label for="formFileSm" class="form-label">Foto Handphone</label>
@@ -384,8 +376,8 @@
             @endif
 
             $(document).on('click', 'button', (e) => {
-                _target = e.target.id;
-                id = $(e.target).data('id');
+                let _target = e.target.id;
+                let id = $(e.target).data('id');
                 if(_target.indexOf('btn-bayar') > -1) {
                     e.preventDefault();
                     let url = '{{ route("checkout-handphone", ":id") }}';
@@ -405,9 +397,7 @@
                     }
                 } else if (_target.indexOf('btn-cart') > -1) {
                     e.preventDefault();
-                    let url = '{{ route("cart", ":id") }}';
-                    url = url.replace(':id', id);
-                    $(`#sell${id}`).attr('action', '{{ route("cart") }}').submit();
+                    $(`#sell${id}`).attr('action', '{{ route("cartInsert") }}').submit();
                 }
             });
 
@@ -416,7 +406,8 @@
                     <div class="parent-varian"><hr>
                         <span style="cursor: pointer" class="badge bg-danger delete-varian mt-2">Hapus</span>
                         <input type="text" name="varian[]" class="form-control mt-2" placeholder="Varian.." autocomplete="off">
-                        <input type="text" name="harga[]" id="item_price" class="form-control my-2" placeholder="Harga.." autocomplete="off">
+                        <input type="text" name="harga[]" id="item_price" class="form-control mt-2" placeholder="Harga.." autocomplete="off">
+                        <input type="number" name="stok[]" class="form-control my-2" autocomplete="off" placeholder="123">
                     </div>`; 
                 $(document).find('.varian').append(el);
             });
@@ -464,6 +455,7 @@
                         $(`#displaytotal${handphoneId}`).val('Rp.' + number_format(price));
                         $(`#displaytotal${handphoneId}`).attr('data-price', v.price);
                         $(`#inputtotal${handphoneId}`).val(price);
+                        $('.stok').html(`<small>stok: ${v.available_items}</small>`);
                     }
                 });
             });

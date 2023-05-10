@@ -8,64 +8,89 @@
             </a>
         </strong>Keranjang
     </span>
-    <table class="table table-bordered mt-3">
-        <thead class="bg-warning">
-            <tr>
-                <th class="text-center">Produk</th>
-                <th>Harga</th>
-                <th class="text-center">Jumlah</th>
-                <th>Subtotal</th>
-                <th class="text-center">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $total = 0 @endphp
-            @foreach($data as $key => $item)
-            @php $total += $item->total @endphp
-            <tr>
-                <td hidden><input class="data-id" type="number" value="{{ $item->id }}"></td>
-                <td>
-                    <div class="row">
-                        <div class="col-6 d-flex flex-column">
-                            <span>{{ $item->name }}</span>
-                            <small>Varian: {{ $item->varian }}</small>
-                        </div>
-                        <div class="col-6">
-                            <img class="img-cart" src="{{ asset('') }}picture/handphone/{{ $item->picture }}" alt="Produk">
-                        </div>
-                    </div>
-                </td>
-                <td class="price">Rp.{{ number_format($item->price) }}</td>
-                <td class="text-center">
-                    <div class="input-group d-flex justify-center quantity">
-                        <button type="button" class="cart-button-jml button-minus" data-field="quantity">-</button>
-                        <input type="number" step="1" min="1" max="" value="{{ $item->jumlah }}" name="quantity" class="quantity-field" disabled>
-                        <button type="button"class="cart-button-jml button-plus" data-field="quantity">+</button>
-                    </div>
-                </td>
-                <td class="sub-total">Rp.{{ number_format($item->total) }}</td>
-                <td class="text-center">
-                    <button class="btn btn-danger btn-sm remove">Hapus</button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3">Total</td>
-                <td class="total">Rp.{{ number_format($total) }}</td>
-                <td>
-                    <button class="btn btn-outline-success btn-sm checkout-cart">
-                    Checkout
-                    </button>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
+    @if(count($data) > 0)
+        <form method="post" action="{{ route('cartCheckout') }}">
+            @csrf
+            <table class="table table-bordered mt-3">
+                <thead class="bg-warning">
+                    <tr>
+                        <th class="text-center">Produk</th>
+                        <th>Harga</th>
+                        <th class="text-center">Jumlah</th>
+                        <th>Subtotal</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php $total = 0 @endphp
+                    @foreach($data as $key => $item)
+                    @php $total += $item->total @endphp
+                    <tr>
+                        <td class="data-cart" hidden>
+                            <input class="data-id" type="number" name="id[]" value="{{ $item->id }}" hidden>
+                            <input type="number" name="handphone_id[]" value="{{ $item->handphone_id }}" hidden>
+                            <input type="number" name="varian_id[]" value="{{ $item->varian_id }}" hidden>
+                            <input type="text" name="kategori[]" value="{{ $item->kategori_item }}" hidden>
+                            <input type="text" name="jml[]" value="{{ $item->jumlah }}" hidden>
+                            <input type="text" name="price[]" value="{{ $item->price }}" hidden>
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6 d-flex flex-column">
+                                    <span>{{ $item->name }}</span>
+                                    <small>Varian: {{ $item->varian }}</small>
+                                </div>
+                                <div class="col-6">
+                                    <img class="img-cart" src="{{ asset('') }}picture/handphone/{{ $item->picture }}" alt="Produk">
+                                </div>
+                            </div>
+                        </td>
+                        <td class="price">Rp.{{ number_format($item->price) }}</td>
+                        <td class="text-center">
+                            <div class="input-group d-flex justify-center quantity">
+                                <button type="button" class="cart-button-jml button-minus" data-field="quantity">-</button>
+                                <input type="number" step="1" min="1" max="" value="{{ $item->jumlah }}" name="quantity" class="quantity-field" disabled>
+                                <button type="button"class="cart-button-jml button-plus" data-field="quantity">+</button>
+                            </div>
+                        </td>
+                        <td class="sub-total">Rp.{{ number_format($item->total) }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-danger btn-sm remove">Hapus</button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">Total</td>
+                        <td class="total">Rp.{{ number_format($total) }}</td>
+                        <td>
+                            <button class="btn btn-outline-success btn-sm checkout-cart">
+                            Checkout
+                            </button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
+    @else
+    <div class="card mt-3 shadow">
+        <div class="card-body">
+            <p class="card-text" style="color: rgb(218 45 61);">Keranjang kosong!</p>
+            <a href="#" class="btn btn-primary mt-2">Go somewhere</a>
+        </div>
+    </div>
+    @endif
 @stop
 
 @section('script')
 <script>
+    @if($message = Session::get('success'))
+        swal("{{ $message }}", {
+            icon: "success",
+        });
+    @endif
+
     function incrementValue(e) {
         e.preventDefault();
         let fieldName = $(e.target).data('field');

@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GudangController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\produk\ProdukHandphoneController;
 use App\Http\Controllers\produk\ProdukPulsaController;
 use App\Http\Controllers\produk\ProdukViewsController;
-use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,9 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function() {
     // cart
     Route::prefix('cart')->group(function() {
         Route::get('/', [CartController::class, 'index'])->name('cart');
-        Route::post('/', [ProdukViewsController::class, 'cart'])->name('cart');
+        Route::post('/insert', [CartController::class, 'insert'])->name('cartInsert');
         Route::patch('/changeDataCart/{id}', [CartController::class, 'changeDataCart']);
         Route::delete('/deleteDataCart/{id}', [CartController::class, 'deleteDataCart']);
+        Route::post('/checkout', [CartController::class, 'checkout'])->name('cartCheckout');
     });
     // produk
     Route::prefix('/produk')->group(function() {
@@ -56,6 +57,10 @@ Route::middleware(['auth', 'verified'])->group(function() {
             Route::get('/detail-handphone/{id}', [ProdukHandphoneController::class, 'getDetailHandphone'])->name('getDetailHandphone');
             Route::get('/varian-handphone/{id}', [ProdukHandphoneController::class, 'getVarianHandphone'])->name('getVarianHandphone');
         });
+    });
+    // gudang
+    Route::prefix('gudang')->group(function() {
+        Route::get('/', [GudangController::class, 'index'])->name('gudang');
     });
     // keuangan
     Route::prefix('/keuangan')->group(function() {

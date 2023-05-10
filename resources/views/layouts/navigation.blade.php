@@ -16,10 +16,13 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('handphone')" id="menus" class="{{ str_contains(url()->current(), 'produk') ? 'active' : '' }}">
-                        {{ __('Jual Produk') }}
+                        {{ __('Penjualan') }}
                     </x-nav-link>
                     <x-nav-link :href="route('keuangan')" id="menus" class="{{ str_contains(url()->current(), 'keuangan') ? 'active' : '' }}">
                         {{ __('Keuangan') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('gudang')" id="menus" class="{{ str_contains(url()->current(), 'gudang') ? 'active' : '' }}">
+                        {{ __('Gudang') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -77,10 +80,13 @@
                 {{ __('Dashboard') }}
             </x-nav-link>
             <x-nav-link :href="route('handphone')" id="menus" class="{{ str_contains(url()->current(), 'produk') ? 'active' : '' }}">
-                {{ __('Produk') }}
+                {{ __('Penjualan') }}
             </x-nav-link>
             <x-nav-link :href="route('keuangan')" id="menus" class="{{ str_contains(url()->current(), 'keuangan') ? 'active' : '' }}">
                 {{ __('Keuangan') }}
+            </x-nav-link>
+            <x-nav-link :href="route('gudang')" id="menus" class="{{ str_contains(url()->current(), 'gudang') ? 'active' : '' }}">
+                {{ __('Gudang') }}
             </x-nav-link>
         </div>
 

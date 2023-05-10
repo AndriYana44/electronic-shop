@@ -26,9 +26,7 @@ class ProdukHandphoneController extends Controller
         $filtered = null;
         if($request->itemFiltered != null) {
             $filtered = $request->itemFiltered;
-            $item_filtered = DB::table('item_handphone')
-                ->where('name', $filtered)
-                ->get();
+            $item_filtered = ProdukHandphone::with('varian')->where('name', $filtered)->get();
         }
         return view('produk.handphone.index', [
             'item_list' => $item_detail,
@@ -51,7 +49,6 @@ class ProdukHandphoneController extends Controller
         $dataItem->name = $request->nama;
         $dataItem->spesification = $request->spesifikasi;
         $dataItem->picture = $imageName;
-        $dataItem->available_items = $request->stok;
         $dataItem->save();
 
         foreach($request->varian as $key => $varian) {
@@ -61,7 +58,8 @@ class ProdukHandphoneController extends Controller
             DB::table('item_handphone_varian')->insert([
                 'handphone_id' => $dataItem->id,
                 'varian' => $varian,
-                'price' => $harga
+                'price' => $harga,
+                'available_items' => $request->stok[$key]
             ]);
         }
 
@@ -96,7 +94,6 @@ class ProdukHandphoneController extends Controller
             'name' => $request->nama,
             'price' => $harga,
             'spesification' => $request->spesifikasi,
-            'available_items' => $request->stok,
             'picture' => empty($imageName) ? $item->picture : $imageName
         ]);
 
