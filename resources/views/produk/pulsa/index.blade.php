@@ -1,4 +1,7 @@
 @extends('produk.index')
+@section('navigation-produk')
+    @include('layouts.navigation-produk')
+@stop
 @section('main-content')
     <div class="item-menus row my-3">
         <div class="col-12 col-sm-8 col-md-6">

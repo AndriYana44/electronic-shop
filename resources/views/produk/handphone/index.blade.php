@@ -37,43 +37,6 @@
                     <b>{{ count($cart) }}</b>
                 </span>
                 @endif
-                <div class="item-cart">
-                    <div class="item">
-                        <div class="col-12">
-                            <div class="card">
-                            @php $total = 0; @endphp
-                            @foreach($cart as $c)
-                            @php $total += ($c->price*$c->jumlah); @endphp
-                            <div class="card-body d-flex flex-column">
-                                <div class="card-title">
-                                    <span class="badge bg-danger delete-item-cart">x</span>
-                                    <strong>{{ $c->name }}</strong>
-                                </div>
-                                <small class="card-text">Varian: {{ $c->varian }}</small>
-                                <input type="text" name="cart-id" value="{{ $c->id_kategori_item }}" hidden>
-                                <span class="d-flex flex-column x-cart">
-                                    <b><small data-price="{{ $c->price }}" class="text-success cart-item-price">Rp.{{ number_format($c->price) }}</small></b> 
-                                    <div class="input-group">
-                                        <button type="button" class="cart-button-jml button-minus" data-field="quantity">-</button>
-                                        <input type="number" step="1" min="1" max="" value="{{ $c->jumlah }}" name="quantity" class="quantity-field">
-                                        <button type="button"class="cart-button-jml button-plus" data-field="quantity">+</button>
-                                    </div>
-                                </span>
-                            </div>
-                            <hr>
-                            @endforeach
-                            <div class="card-footer d-flex flex-column">
-                                <span>
-                                    <strong>
-                                        <b class="text-success total-price">Total Harga: Rp.{{ number_format($total) }}</b>
-                                    </strong>
-                                </span>
-                                <a href="#" class="btn btn-primary btn-sm">Checkout</a>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

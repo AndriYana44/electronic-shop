@@ -44,7 +44,15 @@ class ProdukViewsController extends Controller
 
     public function aksesoris(): View
     {
-        return view('produk.aksesoris.index');
+        $cart = DB::table('item_cart as c')
+            ->select('c.id_kategori_item', 'c.name', 'c.kategori_item', 'c.price', 'v.varian',
+                DB::raw('sum(jumlah) as jumlah, sum(c.price*jumlah) as total'))
+            ->leftJoin('item_handphone_varian as v', 'v.id', '=', 'c.id_kategori_item')
+            ->groupBy('c.id_kategori_item', 'c.name', 'c.kategori_item', 'c.price', 'v.varian')
+            ->get();
+        return view('produk.aksesoris.index', [
+            'cart' => $cart
+        ]);
     }
 
     public function servis(): View
