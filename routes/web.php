@@ -4,6 +4,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GudangController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\produk\AksesorisController;
+use App\Http\Controllers\produk\ProdukAksesorisController;
 use App\Http\Controllers\produk\ProdukHandphoneController;
 use App\Http\Controllers\produk\ProdukPulsaController;
 use App\Http\Controllers\produk\ProdukViewsController;
@@ -51,7 +53,10 @@ Route::middleware(['auth', 'verified'])->group(function() {
             Route::post('/store_saldo', [ProdukPulsaController::class, 'store_saldo'])->name('store_saldo');
             Route::post('/checkout', [ProdukPulsaController::class, 'checkout'])->name('checkout-pulsa');
         });
-        Route::get('/aksesoris', [ProdukViewsController::class, 'aksesoris'])->name('aksesoris');
+        Route::prefix('aksesoris')->group(function() {
+            Route::get('/', [ProdukAksesorisController::class, 'index'])->name('aksesoris');
+            Route::post('/store', [ProdukAksesorisController::class, 'store'])->name('store-aksesoris');
+        });
         Route::get('/servis', [ProdukViewsController::class, 'servis'])->name('servis');
         Route::prefix('json')->group(function() {
             Route::get('/detail-handphone/{id}', [ProdukHandphoneController::class, 'getDetailHandphone'])->name('getDetailHandphone');

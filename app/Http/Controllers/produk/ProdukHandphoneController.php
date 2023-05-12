@@ -7,6 +7,7 @@ use App\Models\produk\handphone\HandphoneSold;
 use App\Models\produk\Cart;
 use App\Models\produk\handphone\HandphoneVarian;
 use App\Models\produk\ProdukHandphone;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -17,12 +18,22 @@ class ProdukHandphoneController extends Controller
     public function index(request $request): View
     {
         $item_detail = ProdukHandphone::with('varian')->get();
-        $cart = DB::table('item_cart as c')
-            ->select('c.id_kategori_item', 'c.name', 'c.kategori_item', 'c.price', 'v.varian',
-                DB::raw('sum(jumlah) as jumlah, sum(c.price*jumlah) as total'))
-            ->leftJoin('item_handphone_varian as v', 'v.id', '=', 'c.id_kategori_item')
-            ->groupBy('c.id_kategori_item', 'c.name', 'c.kategori_item', 'c.price', 'v.varian')
-            ->get();
+        $cart = new Collection();
+        foreach(DB::select('
+            select c.id_kategori_item
+                , c.name
+                , c.kategori_item
+                , c.price
+                , coalesce(hv.varian, av.varian) as varian
+                , sum(jumlah) as jumlah
+                , sum(c.price*jumlah) as total
+            from item_cart as c
+            left join item_handphone_varian as hv on hv.id = c.id_kategori_item
+                and c.kategori_item = "handphone"
+            left join item_aksesoris_varian as av on av.id = c.id_kategori_item
+                and c.kategori_item = "aksesoris"
+            group by 1,2,3,4,5
+        ') as $d) { $cart->push($d); }
 
         $filtered = null;
         if($request->itemFiltered != null) {
