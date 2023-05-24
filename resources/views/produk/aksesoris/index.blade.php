@@ -29,7 +29,7 @@
 
     <div class="product-list">
         <div class="row">
-            @foreach($item_display as $item)
+            @foreach($item_display as $key => $item)
             <div class="col-6 col-sm-4 col-md-3">
                 <div class="card shadow-md" style="height: 23rem;">
                     <div class="card-header">
@@ -41,20 +41,26 @@
                         </div>
                     </div>
                     <div class="card-footer">
+                        <span>{{ $item->keterangan }}</span><hr class="my-2">
                         <span class="d-flex justify-between">
+                            <strong>
+                                {{ number_format($item->varian->first()->price) }}
+                                @if(($item->varian->first()->price - $item->varian->last()->price) > 0)
+                                    - {{ number_format($item->varian->last()->price) }}
+                                @endif
+                            </strong>
                         </span>
                         <hr class="my-2">
                         <div class="action">
                             <div class="sub-action d-flex">
                                 <form action="" method="POST">
-                                    
                                     <button type="submit" data-item="" class="btn btn-sm btn-outline-danger show_confirm mr-2">Delete</button>
                                 </form>
                                 <a class="btn btn-outline-success btn-sm" href="#">
                                     Edit
                                 </a>
                             </div>
-                            <a href="#" class="d-block btn btn-sm btn-success sell">Jual</a>
+                            <a href="#" class="d-block btn btn-sm btn-success sell" data-id="{{ $item->id }}" data-bs-toggle="modal" data-bs-target="#sellItem{{ $item->id }}">Jual</a>
                         </div>
                     </div>
                 </div>
@@ -113,10 +119,111 @@
             </div>
         </div>
     </div>
+
+    @foreach($item_display as $item)
+    <div class="modal fade" id="sellItem{{ $item->id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" action="" id="sell{{ $item->id }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Jual Item ({{ $item->name }})</h5>
+                        <input type="text" name="name" value="{{ $item->name }}" hidden>
+                        <input type="text" name="kategori" value="handphone" hidden>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-7">
+                                <img class="img-handphone-sell" src="{{ asset('') }}picture/aksesoris/{{ $item->picture }}" alt="images" style="height: 15rem;">
+                            </div>
+                            <div class="col-4">
+                                <br> {{ $item->keterangan }}
+                                <hr class="my-2">
+                            </div>
+                            <div class="col-12 mt-3 d-flex flex-column">
+                                <span>pilih varian</span>
+                                <div id="varian-alert-{{ $item->id }}" class="alert-varian my-2">
+                                    <span class="px-3 py-2"  style="border-radius: 8px; font-size:14px; background-color: rgb(248 215 218);color: rgb(218 45 61);"><strong>Note:</strong> pilih varian terlebih dahulu!</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                @foreach($item->varian as $varian)
+                                    <span style="cursor: pointer" data-aksesoris-id="{{ $item->id }}" data-varian-id="{{ $varian->id }}" class="badge bg-secondary varian-item mr-2">{{ $varian->varian }}</span>
+                                @endforeach
+                            </div>
+                            <div class="col-3 mt-2">
+                                <small>
+                                    <label for="jml">
+                                        Jumlah: 
+                                        <div class="input-group d-flex justify-center quantity">
+                                            <button type="button" class="cart-button-jml button-minus" data-field="jml" data-id="{{ $item->id }}">-</button>
+                                            <input type="number" name="jml" data-id="{{ $item->id }}" class="form-control jml quantity-field" value="1" placeholder="0" id="jml{{ $item->id }}">
+                                            <button type="button"class="cart-button-jml button-plus" data-field="jml" data-id="{{ $item->id }}">+</button>
+                                        </div>
+                                    </label>
+                                </small>
+                            </div>
+                            <div class="col-4 mt-2">
+                                <small>
+                                    <label for="jml">
+                                        Total Harga: 
+                                        <input type="text" style="font-size: 12px" data-price="{{ $item->price }}" value="Rp.{{ number_format($item->price) }}" class="form-control" id="displaytotal{{ $item->id }}" disabled>
+                                        <input type="text" value="" name="total" class="form-control" id="inputtotal{{ $item->id }}" hidden>
+                                    </label>
+                                </small>
+                            </div>
+                            <div class="col-2 mt-2 stok-{{ $item->id }} d-flex justify-content-center align-items-center"></div>
+                            <input type="text" name="id_aksesoris" hidden>
+                            <input type="text" name="id_varian" hidden> 
+                            <input type="text" name="harga" hidden>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" data-id="{{ $item->id }}" id="btn-bayar" class="btn btn-outline-primary btn-sm">
+                            Checkout
+                        </button>
+                        <button type="submit" data-id="{{ $item->id }}" id="btn-cart" class="btn btn-outline-secondary btn-sm">
+                            Masukan Cart
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
 @stop
 @section('script')
 <script>
     $(document).ready(function() {
+        $(document).on('click', '.varian-item', function(e) {
+            $('.varian-item').removeClass('bg-warning');
+            $('.varian-item').removeClass('selected');
+            $('.varian-item').addClass('bg-secondary');
+            $(e.target).addClass('selected');
+            $(e.target).addClass('bg-warning');
+            $(e.target).removeClass('bg-secondary');
+
+            let varianId = $(e.target).data('varian-id');
+            let aksesorisId = $(e.target).data('aksesoris-id');
+            let jml = $(`#jml${aksesorisId}`).val();
+
+            $('input[name=id_handphone]').val(aksesorisId);
+            $('input[name=id_varian]').val(varianId);
+
+            $.each(dataVarian[0].varian, (i, v) => {
+                if(v.id == varianId) {
+                    let price = v.price*jml;
+                    $('input[name=harga]').val(v.price)
+                    $(`#displaytotal${aksesorisId}`).val('Rp.' + number_format(price));
+                    $(`#displaytotal${aksesorisId}`).attr('data-price', v.price);
+                    $(`#inputtotal${aksesorisId}`).val(price);
+                    $(`.stok-${aksesorisId}`).html(`<small>stok: ${v.available_items}</small>`);
+                }
+            });
+        });
+
         $(document).on('click', '.btn-varian', function (e) { 
             let el = `
                 <div class="parent-varian"><hr>
