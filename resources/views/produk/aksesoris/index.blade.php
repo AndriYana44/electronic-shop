@@ -129,13 +129,13 @@
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Jual Item ({{ $item->name }})</h5>
                         <input type="text" name="name" value="{{ $item->name }}" hidden>
-                        <input type="text" name="kategori" value="handphone" hidden>
+                        <input type="text" name="kategori" value="aksesoris" hidden>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-7">
-                                <img class="img-handphone-sell" src="{{ asset('') }}picture/aksesoris/{{ $item->picture }}" alt="images" style="height: 15rem;">
+                                <img class="img-aksesoris-sell" src="{{ asset('') }}picture/aksesoris/{{ $item->picture }}" alt="images" style="height: 15rem;">
                             </div>
                             <div class="col-4">
                                 <br> {{ $item->keterangan }}
@@ -197,6 +197,96 @@
 @section('script')
 <script>
     $(document).ready(function() {
+        function incrementValue(e) {
+            e.preventDefault();
+            let id = $(e.target).data('id');
+            let fieldName = $(e.target).data('field');
+            let parent = $(e.target).closest('div');
+            let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+            let price = $(`#displaytotal${id}`).attr('data-price');
+
+            if (!isNaN(currentVal)) {
+                parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
+                let fix_price = price*parent.find('input[name=' + fieldName + ']').val();
+                $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
+                $(`#inputtotal${id}`).val(fix_price);
+            } else {
+                parent.find('input[name=' + fieldName + ']').val(1);
+            }
+        }
+
+        function decrementValue(e) {
+            e.preventDefault();
+            let id = $(e.target).data('id');
+            let fieldName = $(e.target).data('field');
+            let parent = $(e.target).closest('div');
+            let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
+            let price = $(`#displaytotal${id}`).attr('data-price');
+
+            if (!isNaN(currentVal) && currentVal > 1) {
+                parent.find('input[name=' + fieldName + ']').val(currentVal - 1);
+                let fix_price = price*parent.find('input[name=' + fieldName + ']').val();
+                $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
+                $(`#inputtotal${id}`).val(fix_price);
+            } else {
+                parent.find('input[name=' + fieldName + ']').val(1);
+            }
+        }
+
+        $('.input-group').on('click', '.button-plus', function(e) {
+            incrementValue(e);
+        });
+
+        $('.input-group').on('click', '.button-minus', function(e) {
+            decrementValue(e);
+        });
+        
+        $.each($(`.alert-varian`), (i,v) => {
+            $(v).hide();
+        });
+
+        $(document).on('click', 'button', (e) => {
+            let _target = e.target.id;
+            let id = $(e.target).data('id');
+            if(_target.indexOf('btn-bayar') > -1) {
+                e.preventDefault();
+                let url = '{{ route("checkout-handphone", ":id") }}';
+                url = url.replace(':id', id);
+                let varianEl = $(e.target).closest('.modal-content').find('.varian-item');
+                let varianSelected = 0;
+                $.each(varianEl, function(i,v) {
+                    varianSelected += $(v).hasClass('selected') ? 1 : 0
+                });
+                if(varianSelected) {
+                    $(`#sell${id}`).attr('action', url).submit();
+                }else{
+                    $(`#varian-alert-${id}`).fadeTo(2500, 500)
+                    .slideUp(500, function() {
+                        $(`#varian-alert-${id}`).slideUp(500);
+                    });
+                }
+            } else if (_target.indexOf('btn-cart') > -1) {
+                e.preventDefault();
+                $(`#sell${id}`).attr('action', '{{ route("cartInsert") }}').submit();
+            }
+        });
+
+        let dataVarian = [];
+        $(document).on('click', '.sell', function(e) {
+            dataVarian = [];
+            let id = $(e.target).data('id');
+            $.ajax(`{{ url('') }}/produk/json/detail-aksesoris/${id}`, {
+                dataType: 'json',
+                type: 'get',
+                success: function(res) {
+                    $.each(res, (i, v) => {
+                        dataVarian.push(v)
+                    });
+                }
+            });
+            console.log(dataVarian);
+        });
+
         $(document).on('click', '.varian-item', function(e) {
             $('.varian-item').removeClass('bg-warning');
             $('.varian-item').removeClass('selected');
@@ -209,7 +299,7 @@
             let aksesorisId = $(e.target).data('aksesoris-id');
             let jml = $(`#jml${aksesorisId}`).val();
 
-            $('input[name=id_handphone]').val(aksesorisId);
+            $('input[name=id_aksesoris]').val(aksesorisId);
             $('input[name=id_varian]').val(varianId);
 
             $.each(dataVarian[0].varian, (i, v) => {

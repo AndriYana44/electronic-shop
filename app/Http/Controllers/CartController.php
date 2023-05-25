@@ -6,6 +6,7 @@ use App\Models\produk\Cart;
 use App\Models\produk\handphone\HandphoneSold;
 use App\Models\produk\handphone\HandphoneVarian;
 use App\Models\produk\ProdukHandphone;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,15 +14,34 @@ class CartController extends Controller
 {
     public function index()
     {
-        $data = DB::table('item_cart as c')
-        ->select(DB::raw('
-            c.id, c.id_kategori_item, h.id as handphone_id, v.id as varian_id,
-            c.name, c.kategori_item, c.price, v.varian, h.picture,
-            sum(jumlah) as jumlah, sum(c.price*jumlah) as total'))
-        ->leftJoin('item_handphone_varian as v', 'v.id', '=', 'c.id_kategori_item')
-        ->leftJoin('item_handphone as h', 'h.id', '=', 'v.handphone_id')
-        ->groupBy(DB::raw('1,2,3,4,5,6,7,8,9'))
-        ->get();
+        $data = new Collection();
+        foreach( DB::select('
+            select c.id
+                , c.id_kategori_item
+                , h.id as handphone_id
+                , v.id as handphone_varian_id
+                , aks.id as aksesoris_id
+                , aks_v.id as aksesoris_varian_id
+                , c.name
+                , c.kategori_item
+                , c.price
+                , v.varian
+                , h.picture
+                , aks_v.varian as varian_aksesoris
+                , aks.picture as aksesoris_picture
+                , sum(jumlah) as jumlah
+                , sum(c.price*jumlah) as total
+            from item_cart as c
+            left join item_handphone_varian as v
+            on v.id = c.id_kategori_item and c.kategori_item = "handphone"
+            left join item_handphone as h
+            on h.id = v.handphone_id
+            left join item_aksesoris_varian as aks_v
+            on aks_v.id = c.id_kategori_item and c.kategori_item = "aksesoris"
+            left join item_aksesoris as aks
+            on aks.id = aks_v.aksesoris_id
+            group by 1,2,3,4,5,6,7,8,9,10,11,12,13
+        ') as $d) { $data->push($d); }
 
         return view('cart.index', [
             'data' => $data,

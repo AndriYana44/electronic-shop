@@ -24,12 +24,17 @@
                 <tbody>
                     @php $total = 0 @endphp
                     @foreach($data as $key => $item)
-                    @php $total += $item->total @endphp
+                    @php 
+                        $total += $item->total;
+                        $picture = $item->kategori_item == 'handphone' ? $item->picture : $item->aksesoris_picture;
+                        $varian = $item->kategori_item == 'handphone' ? $item->varian : $item->varian_aksesoris;
+                    @endphp
+                    {{-- {{ dd($item) }} --}}
                     <tr>
                         <td class="data-cart" hidden>
                             <input class="data-id" type="number" name="id[]" value="{{ $item->id }}" hidden>
                             <input type="number" name="handphone_id[]" value="{{ $item->handphone_id }}" hidden>
-                            <input type="number" name="varian_id[]" value="{{ $item->varian_id }}" hidden>
+                            <input type="number" name="varian_id[]" value="{{ $item->kategori_item == 'handphone' ? $item->handphone_varian_id : $item->aksesoris_varian_id }}" hidden>
                             <input type="text" name="kategori[]" value="{{ $item->kategori_item }}" hidden>
                             <input type="text" name="jml[]" value="{{ $item->jumlah }}" hidden>
                             <input type="text" name="price[]" value="{{ $item->price }}" hidden>
@@ -38,10 +43,10 @@
                             <div class="row">
                                 <div class="col-6 d-flex flex-column">
                                     <span>{{ $item->name }}</span>
-                                    <small>Varian: {{ $item->varian }}</small>
+                                    <small>Varian: {{ $varian }}</small>
                                 </div>
                                 <div class="col-6">
-                                    <img class="img-cart" src="{{ asset('') }}picture/handphone/{{ $item->picture }}" alt="Produk">
+                                    <img class="img-cart" src="{{ asset('') }}picture/{{ strtolower($item->kategori_item) }}/{{ $picture }}" alt="Produk">
                                 </div>
                             </div>
                         </td>
@@ -134,6 +139,7 @@
     removeButtons.forEach((button) => {
         button.addEventListener("click", (e) => {
             // Ambil elemen yang akan dihapus (yaitu elemen induk dari tombol hapus)
+            e.preventDefault();
             const row = button.parentElement.parentElement;
             let idx = row.querySelector('.data-id').value;
             let url = `{{ url('') }}/cart/deleteDataCart/${idx}`;

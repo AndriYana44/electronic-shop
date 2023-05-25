@@ -61,6 +61,8 @@ Route::middleware(['auth', 'verified'])->group(function() {
         Route::prefix('json')->group(function() {
             Route::get('/detail-handphone/{id}', [ProdukHandphoneController::class, 'getDetailHandphone'])->name('getDetailHandphone');
             Route::get('/varian-handphone/{id}', [ProdukHandphoneController::class, 'getVarianHandphone'])->name('getVarianHandphone');
+            Route::get('/varian-aksesoris/{id}', [ProdukAksesorisController::class, 'getVarianAksesoris'])->name('getVarianAksesoris');
+            Route::get('/detail-aksesoris/{id}', [ProdukAksesorisController::class, 'getDetailAksesoris'])->name('getDetailAksesoris');
         });
     });
     // gudang

@@ -89,4 +89,16 @@ class ProdukAksesorisController extends Controller
             'success', 'Item berhasil di hapus!'
         );
     }
+
+    public function getDetailAksesoris($id)
+    {
+        $data = Aksesoris::with('varian')->where('id', $id)->get();
+        return $data->toJson();
+    }
+
+    public function getVarianHandphone($id)
+    {
+        $data = AksesorisVarian::with('item')->where('id', $id)->get();
+        return $data->toJson();
+    }
 }
