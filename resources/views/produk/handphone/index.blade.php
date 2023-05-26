@@ -441,8 +441,14 @@
                 $('input[name=id_handphone]').val(handphoneId);
                 $('input[name=id_varian]').val(varianId);
 
+                let jml_el = $(e.target).closest('.row').find('.jml');
+                let currentJml = jml_el.val();
+
                 $.each(dataVarian[0].varian, (i, v) => {
                     if(v.id == varianId) {
+                        if(currentJml > v.available_items){
+                            jml_el.val(v.available_items);
+                        }
                         let price = v.price*jml;
                         $('input[name=harga]').val(v.price)
                         $(`#displaytotal${handphoneId}`).val('Rp.' + number_format(price));
