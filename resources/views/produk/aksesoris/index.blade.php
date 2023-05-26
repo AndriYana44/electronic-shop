@@ -232,14 +232,6 @@
                 parent.find('input[name=' + fieldName + ']').val(1);
             }
         }
-
-        $('.input-group').on('click', '.button-plus', function(e) {
-            incrementValue(e);
-        });
-
-        $('.input-group').on('click', '.button-minus', function(e) {
-            decrementValue(e);
-        });
         
         $.each($(`.alert-varian`), (i,v) => {
             $(v).hide();
@@ -285,6 +277,26 @@
                 }
             });
             console.log(dataVarian);
+        });
+
+        $('.input-group').on('click', '.button-plus', function(e) {
+            let id = $(e.target).data('id');
+            let x = 0;
+            $('.varian-item').each((i,v) => { x += $(v).hasClass('selected') ? 1 : 0 });
+            x ? incrementValue(e) : $(`#varian-alert-${id}`).fadeTo(2500, 500)
+                .slideUp(500, function() {
+                    $(`#varian-alert-${id}`).slideUp(500);
+                });
+        });
+
+        $('.input-group').on('click', '.button-minus', function(e) {
+            let id = $(e.target).data('id');
+            let x = 0;
+            $('.varian-item').each((i,v) => { x += $(v).hasClass('selected') ? 1 : 0 });
+            x ? decrementValue(e) : $(`#varian-alert-${id}`).fadeTo(2500, 500)
+                .slideUp(500, function() {
+                    $(`#varian-alert-${id}`).slideUp(500);
+                });
         });
 
         $(document).on('click', '.varian-item', function(e) {

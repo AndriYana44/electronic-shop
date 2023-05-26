@@ -33,7 +33,7 @@
                     <tr>
                         <td class="data-cart" hidden>
                             <input class="data-id" type="number" name="id[]" value="{{ $item->id }}" hidden>
-                            <input type="number" name="handphone_id[]" value="{{ $item->handphone_id }}" hidden>
+                            <input type="number" name="produk_id[]" value="{{ $item->kategori_item == 'handphone' ? $item->handphone_id : $item->aksesoris_id }}" hidden>
                             <input type="number" name="varian_id[]" value="{{ $item->kategori_item == 'handphone' ? $item->handphone_varian_id : $item->aksesoris_varian_id }}" hidden>
                             <input type="text" name="kategori[]" value="{{ $item->kategori_item }}" hidden>
                             <input type="text" name="jml[]" value="{{ $item->jumlah }}" hidden>
@@ -70,7 +70,7 @@
                         <td colspan="3">Total</td>
                         <td class="total">Rp.{{ number_format($total) }}</td>
                         <td>
-                            <button class="btn btn-outline-success btn-sm checkout-cart">
+                            <button type="submit" class="btn btn-outline-success btn-sm checkout-cart">
                             Checkout
                             </button>
                         </td>
@@ -82,7 +82,7 @@
     <div class="card mt-3 shadow">
         <div class="card-body">
             <p class="card-text" style="color: rgb(218 45 61);">Keranjang kosong!</p>
-            <a href="#" class="btn btn-primary mt-2">Go somewhere</a>
+            <a href="#" class="btn btn-primary mt-2">Lihat Produk</a>
         </div>
     </div>
     @endif

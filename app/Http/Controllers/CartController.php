@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\produk\aksesoris\AksesorisSold;
+use App\Models\produk\aksesoris\AksesorisVarian;
 use App\Models\produk\Cart;
 use App\Models\produk\handphone\HandphoneSold;
 use App\Models\produk\handphone\HandphoneVarian;
@@ -51,11 +53,12 @@ class CartController extends Controller
     public function insert(Request $request)
     {
         $checkDataIfExist = DB::table('item_cart')
-            ->select(DB::raw('count(id) as jml'))
-            ->where([
-                'id_kategori_item' => $request->id_varian
-            ])->get();
-        
+        ->select(DB::raw('count(id) as jml'))
+        ->where([
+            'id_kategori_item' => $request->id_varian,
+            'kategori_item' => $request->kategori
+        ])->get();
+            
         if($checkDataIfExist->first()->jml > 0) {
             $cart = Cart::where('id_kategori_item', $request->id_varian);
             $dataCart = $cart->get();
@@ -99,7 +102,7 @@ class CartController extends Controller
             if(strtolower($request->kategori[$i]) == 'handphone') {
                 // insert data ke table item_handphone_sold
                 HandphoneSold::insert([
-                    'handphone_id' => $request->handphone_id[$i],
+                    'handphone_id' => $request->produk_id[$i],
                     'handphone_varian_id' => $request->varian_id[$i],
                     'sold_at_price' => $request->price[$i],
                     'jumlah' => $request->jml[$i]
@@ -114,7 +117,22 @@ class CartController extends Controller
                 // menghapus data pada cart
                 Cart::find($request->id[$i])->delete();
             }elseif(strtolower($request->kategori[$i]) == 'aksesoris') {
-                dd('fitur belum tersedia');
+                // insert data ke table item_handphone_sold
+                AksesorisSold::insert([
+                    'aksesoris_id' => $request->produk_id[$i],
+                    'aksesoris_varian_id' => $request->varian_id[$i],
+                    'sold_at_price' => $request->price[$i],
+                    'jumlah' => $request->jml[$i]
+                ]);
+                
+                // mencari data untuk update stok pada field available_items
+                $data = AksesorisVarian::where('id', $request->varian_id[$i]);
+                $dataItems = $data->get();
+                $availableItems = $dataItems->first()->available_items;
+                $data->update(['available_items' => $availableItems-$request->jml[$i]]);
+                
+                // menghapus data pada cart
+                Cart::find($request->id[$i])->delete();
             }
         }
 

@@ -249,7 +249,7 @@
 @section('script')
     <script>
         $(document).ready(function() {
-            function incrementValue(e) {
+            function incrementValue(e, max) {
                 e.preventDefault();
                 let id = $(e.target).data('id');
                 let fieldName = $(e.target).data('field');
@@ -257,11 +257,13 @@
                 let currentVal = parseInt(parent.find('input[name=' + fieldName + ']').val(), 10);
                 let price = $(`#displaytotal${id}`).attr('data-price');
 
-                if (!isNaN(currentVal)) {
+                if (!isNaN(currentVal) && currentVal < max) {
                     parent.find('input[name=' + fieldName + ']').val(currentVal + 1);
                     let fix_price = price*parent.find('input[name=' + fieldName + ']').val();
                     $(`#displaytotal${id}`).val('Rp.' + number_format(fix_price));
                     $(`#inputtotal${id}`).val(fix_price);
+                }else if(!isNaN(currentVal) && currentVal >= max){
+                    parent.find('input[name=' + fieldName + ']').val(currentVal);
                 } else {
                     parent.find('input[name=' + fieldName + ']').val(1);
                 }
@@ -284,14 +286,6 @@
                     parent.find('input[name=' + fieldName + ']').val(1);
                 }
             }
-
-            $('.input-group').on('click', '.button-plus', function(e) {
-                incrementValue(e);
-            });
-
-            $('.input-group').on('click', '.button-minus', function(e) {
-                decrementValue(e);
-            });
 
             $.each($(`.alert-varian`), (i,v) => {
                 $(v).hide();
@@ -394,6 +388,42 @@
                         });
                     }
                 });
+            });
+
+            $('.input-group').on('click', '.button-plus', function(e) {
+                let id = $(e.target).data('id');
+                let x = 0;
+                let varian_id = 0;
+                let varianEl = $(e.target).closest('.modal-content').find('.varian-item');
+                varianEl.each((i,v) => { 
+                    if($(v).hasClass('selected'))  {
+                        x += 1; 
+                        varian_id += $(v).data('varian-id');
+                    }
+                });
+                
+                $.each(dataVarian[0].varian, (i, v) => {
+                    if(x) {
+                        v.id == varian_id ? incrementValue(e, v.available_items) : 'pass';
+                    }else{
+                        $(`#varian-alert-${id}`).fadeTo(2500, 500)
+                            .slideUp(500, function() {
+                                $(`#varian-alert-${id}`).slideUp(500);
+                            });
+                    }
+                });
+
+            });
+
+            $('.input-group').on('click', '.button-minus', function(e) {
+                let id = $(e.target).data('id');
+                let x = 0;
+                let varianEl = $(e.target).closest('.modal-content').find('.varian-item');
+                varianEl.each((i,v) => { x += $(v).hasClass('selected') ? 1 : 0 });
+                x ? decrementValue(e) : $(`#varian-alert-${id}`).fadeTo(2500, 500)
+                    .slideUp(500, function() {
+                        $(`#varian-alert-${id}`).slideUp(500);
+                    });
             });
 
             $(document).on('click', '.varian-item', function(e) {
