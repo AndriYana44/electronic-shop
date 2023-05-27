@@ -446,10 +446,11 @@
 
                 $.each(dataVarian[0].varian, (i, v) => {
                     if(v.id == varianId) {
-                        if(currentJml > v.available_items){
-                            jml_el.val(v.available_items);
-                        }
-                        let price = v.price*jml;
+                        
+                        currentJml > v.available_items ? jml_el.val(v.available_items) : 'pass'
+                        
+                        let price = currentJml > v.available_items ? v.price * v.available_items : v.price*jml
+                        
                         $('input[name=harga]').val(v.price)
                         $(`#displaytotal${handphoneId}`).val('Rp.' + number_format(price));
                         $(`#displaytotal${handphoneId}`).attr('data-price', v.price);

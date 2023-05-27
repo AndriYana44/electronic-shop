@@ -60,10 +60,22 @@ class CartController extends Controller
         ])->get();
             
         if($checkDataIfExist->first()->jml > 0) {
+            if(strtolower($request->kategori) == 'handphone') {
+                $checkStokItems = HandphoneVarian::where('id', $request->id_varian)->get();
+            }else if(strtolower($request->kategori) == 'aksesoris') {
+                $checkStokItems = AksesorisVarian::where('id', $request->id_varian)->get();
+            }
+
+            
             $cart = Cart::where('id_kategori_item', $request->id_varian);
             $dataCart = $cart->get();
+            $jml = $dataCart->first()->jumlah + $request->jml;
+            $max_item = $checkStokItems->first()->available_items;
+            if($jml > $max_item) {
+                $jml = $max_item;
+            }
             $cart->update([
-                'jumlah' => $dataCart->first()->jumlah + $request->jml,
+                'jumlah' => $jml,
             ]);
         }else{
             $cart = new Cart();
